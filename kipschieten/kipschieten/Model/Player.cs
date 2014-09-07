@@ -8,5 +8,11 @@ namespace kipschieten.Model
 {
     class Player
     {
+        public int score = 0;
+
+        public void addPoint()
+        {
+            score++;
+        }
     }
 }
