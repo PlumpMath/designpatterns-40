@@ -3,9 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
 namespace kipschieten.Model
@@ -20,12 +22,12 @@ namespace kipschieten.Model
         private int _xMaxBounds;
         private int _yMinBounds;
         private int _yMaxBounds;
-
+        private int count = 0;
 
         private Player _player;
         private List<Chicken> _chickens;
         private Grid _playGrid;
-
+        private static String imgChickens = @"C:\Users\stefan\Documents\SourceTree\DesignPatterns\kipschieten\kipschieten\View\kip.png";
         public bool GameOver = false;
 
         public Manager(Grid playGrid)
@@ -53,16 +55,21 @@ namespace kipschieten.Model
             int startAmount = _random.Next(4);
             for (int x = 0; x < startAmount; x++)
             {
-                Chicken chicken = new Chicken();
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Chicken chicken = new Chicken();
 
-                // set location
-                // random based on x and y bounds
-                double xPos, yPos;
-                xPos = (double)_random.Next(_xMinBounds, _xMaxBounds);
-                yPos = (double)_random.Next(_yMinBounds, _yMaxBounds);
-                chicken.setLocation(xPos, yPos);
+                    // set location
+                    // random based on x and y bounds
+                    double xPos, yPos;
+                    xPos = (double)_random.Next(_xMinBounds, _xMaxBounds);
+                    yPos = (double)_random.Next(_yMinBounds, _yMaxBounds);
+                    chicken.setLocation(xPos, yPos);
 
-                _chickens.Add(chicken);
+                    _chickens.Add(chicken);
+                    _playGrid.Children.Add(chicken);
+                });
+                
             }
         }
 
@@ -77,13 +84,15 @@ namespace kipschieten.Model
         {
             foreach(Chicken chicken in _chickens)
             {
+                
                 if (chicken.isShot || chicken.yLocation > _yGridSize || chicken.xLocation > _xGridSize)
                     _chickens.Remove(chicken);
 
-                Application.Current.Dispatcher.Invoke(() =>
+                Application.Current.Dispatcher.Invoke((Action)(() =>
                 {
-                    chicken.Move();
-                });
+                   chicken.Move();
+                   //chicken.Margin = new Thickness(300, 300, 200, 100);
+                }));
             }
 
             int randomNum = _random.Next(10);
@@ -124,13 +133,20 @@ namespace kipschieten.Model
             Application.Current.Dispatcher.Invoke(() => {
                 _playGrid.Children.Clear();
             });
-
+            Thread.Sleep(10);
             foreach(Chicken chicken in _chickens)
             {
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    _playGrid.Children.Add(chicken);
+                Application.Current.Dispatcher.Invoke(() => {
+                    var img = new Image
+                    {
+                        Source =
+                            new BitmapImage(
+                            new Uri(imgChickens))
+                    };
+                    img.Width = 120;
+                    _playGrid.Children.Add(img);
                 });
+                
             }
         }
     }

@@ -11,3 +11,16 @@ c:\users\alex\documents\visual studio 2013\Projects\kipschieten\kipschieten\obj\
 c:\users\alex\documents\visual studio 2013\Projects\kipschieten\kipschieten\obj\Debug\kipschieten.csproj.GenerateResource.Cache
 c:\users\alex\documents\visual studio 2013\Projects\kipschieten\kipschieten\obj\Debug\kipschieten.exe
 c:\users\alex\documents\visual studio 2013\Projects\kipschieten\kipschieten\obj\Debug\kipschieten.pdb
+C:\Users\stefan\Documents\SourceTree\DesignPatterns\kipschieten\kipschieten\obj\Debug\kipschieten.exe
+C:\Users\stefan\Documents\SourceTree\DesignPatterns\kipschieten\kipschieten\obj\Debug\MainWindow.baml
+C:\Users\stefan\Documents\SourceTree\DesignPatterns\kipschieten\kipschieten\obj\Debug\MainWindow.g.cs
+C:\Users\stefan\Documents\SourceTree\DesignPatterns\kipschieten\kipschieten\obj\Debug\App.g.cs
+C:\Users\stefan\Documents\SourceTree\DesignPatterns\kipschieten\kipschieten\obj\Debug\kipschieten_MarkupCompile.cache
+C:\Users\stefan\Documents\SourceTree\DesignPatterns\kipschieten\kipschieten\obj\Debug\kipschieten.g.resources
+C:\Users\stefan\Documents\SourceTree\DesignPatterns\kipschieten\kipschieten\obj\Debug\kipschieten.Properties.Resources.resources
+C:\Users\stefan\Documents\SourceTree\DesignPatterns\kipschieten\kipschieten\obj\Debug\kipschieten.csproj.GenerateResource.Cache
+C:\Users\stefan\Documents\SourceTree\DesignPatterns\kipschieten\kipschieten\obj\Debug\kipschieten.pdb
+C:\Users\stefan\Documents\SourceTree\DesignPatterns\kipschieten\kipschieten\bin\Debug\kipschieten.exe.config
+C:\Users\stefan\Documents\SourceTree\DesignPatterns\kipschieten\kipschieten\bin\Debug\kipschieten.exe
+C:\Users\stefan\Documents\SourceTree\DesignPatterns\kipschieten\kipschieten\bin\Debug\kipschieten.pdb
+C:\Users\stefan\Documents\SourceTree\DesignPatterns\kipschieten\kipschieten\obj\Debug\kipschieten.csprojResolveAssemblyReference.cache

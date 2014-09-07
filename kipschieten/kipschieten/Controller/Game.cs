@@ -28,7 +28,7 @@ namespace kipschieten.Controller
         private void startGame(Grid playGrid)
         {
             _gameManager = new Manager(playGrid);
-
+            
             // new thread for game stuffs 
             Thread gameThread = new Thread(Run);
             gameThread.SetApartmentState(ApartmentState.STA);

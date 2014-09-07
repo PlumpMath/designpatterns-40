@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 
 namespace kipschieten.View
 {
@@ -40,7 +41,7 @@ namespace kipschieten.View
         public void Move()
         {
             // margin for location in grid
-            Margin = new Thickness((Margin.Left + _xStep), (Margin.Top + _yStep), 0, 0);
+            //Margin = new Thickness(20,20,0,0);
         }
 
         public void setLocation(double xPos, double yPos)
