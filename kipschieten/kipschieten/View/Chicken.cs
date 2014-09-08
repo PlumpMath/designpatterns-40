@@ -26,7 +26,7 @@ namespace kipschieten.View
             Random random = new Random();
             // Calculate random direction
             // divide by 60 because 60 fps
-            double xStep = random.Next(15, 20);
+            double xStep = random.Next(2, 3);
             _xStep = xStep;
 
             double yStep = random.Next(-2, 3);

@@ -37,8 +37,8 @@ namespace kipschieten.Controller
 
         public void Run()
         {
-            long beforeTime, timeDiff, sleepTime, frameTime;
-            frameTime = 167;
+            double beforeTime, timeDiff, sleepTime, frameTime;
+            frameTime = 16.7;
 
             beforeTime = (long)(DateTime.UtcNow - _epoch).TotalMilliseconds;
             _running = true;

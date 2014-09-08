@@ -67,7 +67,7 @@ namespace kipschieten.Model
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     Chicken chicken = new Chicken();
-
+                    
                     // set location
                     // random based on x and y bounds
                     double xPos, yPos;
@@ -114,7 +114,7 @@ namespace kipschieten.Model
                 double xPos, yPos;
                 xPos = (double)_random.Next(_xMinBounds, _xMaxBounds);
                 yPos = (double)_random.Next(_yMinBounds, _yMaxBounds);
-                chicken.setLocation(10,10);
+                chicken.setLocation(xPos,yPos);
 
                 _chickens.Add(chicken);
             }
@@ -128,11 +128,11 @@ namespace kipschieten.Model
                     _player.addPoint();
             }
 
-            if (_player.score == 20)
+            if (_player.score == 3)
             {
+                MessageBox.Show("You shot 3 chickens, you win!");
                 GameOver = true;
             }
-
         }
 
         private void updateRender()
@@ -145,7 +145,7 @@ namespace kipschieten.Model
                 {
                     _playGrid.Children.Clear();
                 });
-                for (int i = _chickens.Count - 1; i >= 0; i--)
+                for (int i = _chickens.Count -1; i >= 0; i--)
                 {
                     if (_chickens[i].isShot)
                     {
@@ -161,6 +161,8 @@ namespace kipschieten.Model
                             Margin = _chickens[i].margin,
                             Width = 50
                         };
+                        img.HorizontalAlignment = HorizontalAlignment.Left;
+                        img.VerticalAlignment = VerticalAlignment.Top;
                         _playGrid.Children.Add(img);
                     });
 
