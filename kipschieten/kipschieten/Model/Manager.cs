@@ -22,28 +22,37 @@ namespace kipschieten.Model
         private int _xMaxBounds;
         private int _yMinBounds;
         private int _yMaxBounds;
-        private int count = 0;
 
         private Player _player;
         private List<Chicken> _chickens;
         private Grid _playGrid;
-        private static String imgChickens = @"C:\Users\stefan\Documents\SourceTree\DesignPatterns\kipschieten\kipschieten\View\kip.png";
+        
         public bool GameOver = false;
+
+        private double clickedX, clickedY;
 
         public Manager(Grid playGrid)
         {
             _playGrid = playGrid;
+            _playGrid.MouseUp += _playGrid_MouseUp;
 
             _yGridSize = (int)_playGrid.ActualHeight;
             _xGridSize = (int)_playGrid.ActualWidth;
 
-            _xMaxBounds = _xGridSize - 100;
-            _xMinBounds = 100;
+            _xMaxBounds = _xGridSize - 10;
+            _xMinBounds = 10;
 
-            _yMaxBounds = _yGridSize - 100;
-            _yMinBounds = 100;
+            _yMaxBounds = _yGridSize - 10;
+            _yMinBounds = 10;
 
             initialize();
+        }
+
+        void _playGrid_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Point position = e.GetPosition(_playGrid);
+            clickedX = position.X;
+            clickedY = position.Y;
         }
 
         private void initialize()
@@ -64,35 +73,36 @@ namespace kipschieten.Model
                     double xPos, yPos;
                     xPos = (double)_random.Next(_xMinBounds, _xMaxBounds);
                     yPos = (double)_random.Next(_yMinBounds, _yMaxBounds);
-                    chicken.setLocation(xPos, yPos);
+                    chicken.setLocation(xPos, -yPos);
 
                     _chickens.Add(chicken);
-                    _playGrid.Children.Add(chicken);
                 });
-                
             }
         }
 
         public void Update()
         {
-            updatePlayer();
             updateChickens();
+            updatePlayer();
             updateRender();
         }
 
         private void updateChickens()
         {
-            foreach(Chicken chicken in _chickens)
+            for (int i = _chickens.Count-1; i >= 0; i--)
             {
-                
-                if (chicken.isShot || chicken.yLocation > _yGridSize || chicken.xLocation > _xGridSize)
-                    _chickens.Remove(chicken);
-
-                Application.Current.Dispatcher.Invoke((Action)(() =>
+                if (clickedX >= _chickens[i].margin.Left && clickedX <= _chickens[i].margin.Left + 50 && clickedY >= _chickens[i].margin.Top && clickedY <= _chickens[i].margin.Top + 50)
                 {
-                   chicken.Move();
-                   //chicken.Margin = new Thickness(300, 300, 200, 100);
-                }));
+                    _chickens[i].isShot = true;
+                }
+
+                if (_chickens[i].margin.Top > _yGridSize - 50 || _chickens[i].margin.Left > _xGridSize - 50)
+                    _chickens.Remove(_chickens[i]);
+            }
+
+            foreach (Chicken chicken in _chickens)
+            {
+                chicken.Move();
             }
 
             int randomNum = _random.Next(10);
@@ -104,7 +114,7 @@ namespace kipschieten.Model
                 double xPos, yPos;
                 xPos = (double)_random.Next(_xMinBounds, _xMaxBounds);
                 yPos = (double)_random.Next(_yMinBounds, _yMaxBounds);
-                chicken.setLocation(xPos, yPos);
+                chicken.setLocation(10,10);
 
                 _chickens.Add(chicken);
             }
@@ -129,25 +139,38 @@ namespace kipschieten.Model
         {
             // somethings needs to be changed with the dispatchers
             // the clear works fine but adding children throws error
-
-            Application.Current.Dispatcher.Invoke(() => {
-                _playGrid.Children.Clear();
-            });
-            Thread.Sleep(10);
-            foreach(Chicken chicken in _chickens)
+            try
             {
-                Application.Current.Dispatcher.Invoke(() => {
-                    var img = new Image
-                    {
-                        Source =
-                            new BitmapImage(
-                            new Uri(imgChickens))
-                    };
-                    img.Width = 120;
-                    _playGrid.Children.Add(img);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    _playGrid.Children.Clear();
                 });
-                
+                for (int i = _chickens.Count - 1; i >= 0; i--)
+                {
+                    if (_chickens[i].isShot)
+                    {
+                        _chickens.Remove(_chickens[i]);
+                    }
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        var img = new Image
+                        {
+                            Source =
+                                new BitmapImage(
+                                new Uri(_chickens[i].imgChickens)),
+                            Margin = _chickens[i].margin,
+                            Width = 50
+                        };
+                        _playGrid.Children.Add(img);
+                    });
+
+                }
             }
+            catch (Exception e)
+            {
+                // do stuff
+            }
+            
         }
     }
 }

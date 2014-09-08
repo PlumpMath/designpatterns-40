@@ -1,8 +1,8 @@
 ﻿<Window x:Class="kipschieten.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="600" Width="1000">
+        Title="MainWindow" SizeToContent="WidthAndHeight">
     <Grid>
-        <Grid Name="PlayGrid" HorizontalAlignment="Left" Height="549" Margin="10,10,0,0" VerticalAlignment="Top" Width="972"/>
+        <Grid Name="PlayGrid" HorizontalAlignment="Left" Height="600" VerticalAlignment="Top" Width="1000"/>
     </Grid>
 </Window>

@@ -72,6 +72,7 @@ namespace kipschieten.Controller
         public void GameOver()
         {
             // do stuff
+            Environment.Exit(0);
         }
     }
 }
