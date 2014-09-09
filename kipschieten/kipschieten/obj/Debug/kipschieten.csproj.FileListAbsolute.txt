@@ -24,3 +24,17 @@ C:\Users\stefan\Documents\SourceTree\DesignPatterns\kipschieten\kipschieten\bin\
 C:\Users\stefan\Documents\SourceTree\DesignPatterns\kipschieten\kipschieten\bin\Debug\kipschieten.exe
 C:\Users\stefan\Documents\SourceTree\DesignPatterns\kipschieten\kipschieten\bin\Debug\kipschieten.pdb
 C:\Users\stefan\Documents\SourceTree\DesignPatterns\kipschieten\kipschieten\obj\Debug\kipschieten.csprojResolveAssemblyReference.cache
+C:\Users\Alex\Documents\designpatterns\kipschieten\kipschieten\bin\Debug\kipschieten.exe.config
+C:\Users\Alex\Documents\designpatterns\kipschieten\kipschieten\obj\Debug\kipschieten.exe
+C:\Users\Alex\Documents\designpatterns\kipschieten\kipschieten\obj\Debug\kipschieten.pdb
+C:\Users\Alex\Documents\designpatterns\kipschieten\kipschieten\bin\Debug\View\chicken.png
+C:\Users\Alex\Documents\designpatterns\kipschieten\kipschieten\bin\Debug\kipschieten.exe
+C:\Users\Alex\Documents\designpatterns\kipschieten\kipschieten\bin\Debug\kipschieten.pdb
+C:\Users\Alex\Documents\designpatterns\kipschieten\kipschieten\obj\Debug\kipschieten.csprojResolveAssemblyReference.cache
+C:\Users\Alex\Documents\designpatterns\kipschieten\kipschieten\obj\Debug\MainWindow.baml
+C:\Users\Alex\Documents\designpatterns\kipschieten\kipschieten\obj\Debug\MainWindow.g.cs
+C:\Users\Alex\Documents\designpatterns\kipschieten\kipschieten\obj\Debug\App.g.cs
+C:\Users\Alex\Documents\designpatterns\kipschieten\kipschieten\obj\Debug\kipschieten_MarkupCompile.cache
+C:\Users\Alex\Documents\designpatterns\kipschieten\kipschieten\obj\Debug\kipschieten.g.resources
+C:\Users\Alex\Documents\designpatterns\kipschieten\kipschieten\obj\Debug\kipschieten.Properties.Resources.resources
+C:\Users\Alex\Documents\designpatterns\kipschieten\kipschieten\obj\Debug\kipschieten.csproj.GenerateResource.Cache

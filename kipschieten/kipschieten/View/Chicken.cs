@@ -20,16 +20,16 @@ namespace kipschieten.View
         private double _yStep = 0;
 
         public Thickness margin;
-        public String imgChickens = @"C:\Users\stefan\Documents\SourceTree\DesignPatterns\kipschieten\kipschieten\View\kip.png";
+        public String imgChickens = AppDomain.CurrentDomain.BaseDirectory + "View\\chicken.png";
+
         public Chicken()
         {
             Random random = new Random();
-            // Calculate random direction
-            // divide by 60 because 60 fps
-            double xStep = random.Next(2, 3);
+
+            double xStep = random.Next(-4, 4);
             _xStep = xStep;
 
-            double yStep = random.Next(-2, 3);
+            double yStep = random.Next(-4, 4);
             _yStep = yStep;
         }
 
@@ -38,7 +38,6 @@ namespace kipschieten.View
             // margin for location in grid
             margin.Left += _xStep;
             margin.Top += _yStep;
-            //margin = new Thickness(margin.Left + _xStep, margin.Top + _yStep,0,0);
         }
 
         public void setLocation(double xPos, double yPos)

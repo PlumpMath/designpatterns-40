@@ -63,6 +63,7 @@
     </Compile>
     <Compile Include="Controller\Game.cs" />
     <Compile Include="Model\Manager.cs" />
+    <Compile Include="Model\MouseCapture.cs" />
     <Compile Include="Model\Player.cs" />
     <Compile Include="View\Chicken.cs" />
     <Compile Include="MainWindow.xaml.cs">
@@ -98,7 +99,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="View\kip.png" />
+    <None Include="View\chicken.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

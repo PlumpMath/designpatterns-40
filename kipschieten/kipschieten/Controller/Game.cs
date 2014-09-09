@@ -5,12 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace kipschieten.Controller
 {
     class Game
     {
+        private static double FPS = 30;
+
         private Boolean _running = false;
         private MainWindow _mainWindow;
         private DateTime _epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -38,7 +41,7 @@ namespace kipschieten.Controller
         public void Run()
         {
             double beforeTime, timeDiff, sleepTime, frameTime;
-            frameTime = 16.7;
+            frameTime = (1 / FPS) * 1000;
 
             beforeTime = (long)(DateTime.UtcNow - _epoch).TotalMilliseconds;
             _running = true;
@@ -71,7 +74,7 @@ namespace kipschieten.Controller
 
         public void GameOver()
         {
-            // do stuff
+            MessageBox.Show("You shot 3 chickens, you win!");
             Environment.Exit(0);
         }
     }
