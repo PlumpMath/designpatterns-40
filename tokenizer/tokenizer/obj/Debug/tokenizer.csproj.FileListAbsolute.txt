@@ -1,1 +1,14 @@
 C:\Users\Alex\Dropbox\Algoritmiek 2\tokenizer\tokenizer\bin\Debug\tokenizer.exe.config
+C:\Users\stefan\Documents\SourceTree\DesignPatterns\tokenizer\tokenizer\bin\Debug\tokenizer.exe.config
+C:\Users\stefan\Documents\SourceTree\DesignPatterns\tokenizer\tokenizer\bin\Debug\tokenizer.exe
+C:\Users\stefan\Documents\SourceTree\DesignPatterns\tokenizer\tokenizer\bin\Debug\tokenizer.pdb
+C:\Users\stefan\Documents\SourceTree\DesignPatterns\tokenizer\tokenizer\obj\Debug\tokenizer.csprojResolveAssemblyReference.cache
+C:\Users\stefan\Documents\SourceTree\DesignPatterns\tokenizer\tokenizer\obj\Debug\MainWindow.baml
+C:\Users\stefan\Documents\SourceTree\DesignPatterns\tokenizer\tokenizer\obj\Debug\MainWindow.g.cs
+C:\Users\stefan\Documents\SourceTree\DesignPatterns\tokenizer\tokenizer\obj\Debug\App.g.cs
+C:\Users\stefan\Documents\SourceTree\DesignPatterns\tokenizer\tokenizer\obj\Debug\tokenizer_MarkupCompile.cache
+C:\Users\stefan\Documents\SourceTree\DesignPatterns\tokenizer\tokenizer\obj\Debug\tokenizer.g.resources
+C:\Users\stefan\Documents\SourceTree\DesignPatterns\tokenizer\tokenizer\obj\Debug\tokenizer.Properties.Resources.resources
+C:\Users\stefan\Documents\SourceTree\DesignPatterns\tokenizer\tokenizer\obj\Debug\tokenizer.csproj.GenerateResource.Cache
+C:\Users\stefan\Documents\SourceTree\DesignPatterns\tokenizer\tokenizer\obj\Debug\tokenizer.exe
+C:\Users\stefan\Documents\SourceTree\DesignPatterns\tokenizer\tokenizer\obj\Debug\tokenizer.pdb

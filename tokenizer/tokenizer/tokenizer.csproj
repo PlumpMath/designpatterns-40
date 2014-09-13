@@ -53,7 +53,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ParserException.cs" />
     <Compile Include="Token.cs" />
+    <Compile Include="TokenInfo.cs" />
     <Compile Include="Tokenizer.cs" />
     <Compile Include="TokenList.cs" />
     <Compile Include="TokenType.cs" />

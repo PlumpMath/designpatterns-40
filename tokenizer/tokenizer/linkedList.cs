@@ -6,8 +6,16 @@ using System.Threading.Tasks;
 
 namespace tokenizer
 {
-    enum TokenType
+    class linkedList
     {
-    
+        public void insertBefore()
+        {
+
+        }
+
+        public void insertAfter()
+        {
+
+        }
     }
 }

@@ -8,6 +8,30 @@ namespace tokenizer
 {
     class TokenList
     {
+        public TokenList()
+        {
 
+        }
+
+        public void AddAfter()
+        {
+
+        }
+
+        public void AddBefore()
+        {
+
+        }
+
+        public void AddFirst()
+        {
+
+        }
+
+
+        public void AddLast()
+        {
+
+        }
     }
 }
