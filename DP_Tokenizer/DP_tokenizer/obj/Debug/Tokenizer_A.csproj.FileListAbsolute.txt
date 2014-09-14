@@ -1,0 +1,12 @@
+C:\Users\Alex\Documents\Tokenizer_A\Tokenizer_A\bin\Debug\Tokenizer_A.exe.config
+C:\Users\Alex\Documents\Tokenizer_A\Tokenizer_A\bin\Debug\Tokenizer_A.exe
+C:\Users\Alex\Documents\Tokenizer_A\Tokenizer_A\bin\Debug\Tokenizer_A.pdb
+C:\Users\Alex\Documents\Tokenizer_A\Tokenizer_A\obj\Debug\MainWindow.baml
+C:\Users\Alex\Documents\Tokenizer_A\Tokenizer_A\obj\Debug\MainWindow.g.cs
+C:\Users\Alex\Documents\Tokenizer_A\Tokenizer_A\obj\Debug\App.g.cs
+C:\Users\Alex\Documents\Tokenizer_A\Tokenizer_A\obj\Debug\Tokenizer_A_MarkupCompile.cache
+C:\Users\Alex\Documents\Tokenizer_A\Tokenizer_A\obj\Debug\Tokenizer_A.g.resources
+C:\Users\Alex\Documents\Tokenizer_A\Tokenizer_A\obj\Debug\Tokenizer_A.Properties.Resources.resources
+C:\Users\Alex\Documents\Tokenizer_A\Tokenizer_A\obj\Debug\Tokenizer_A.csproj.GenerateResource.Cache
+C:\Users\Alex\Documents\Tokenizer_A\Tokenizer_A\obj\Debug\Tokenizer_A.exe
+C:\Users\Alex\Documents\Tokenizer_A\Tokenizer_A\obj\Debug\Tokenizer_A.pdb

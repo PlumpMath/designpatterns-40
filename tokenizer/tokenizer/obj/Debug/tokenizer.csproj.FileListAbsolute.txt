@@ -12,3 +12,16 @@ C:\Users\stefan\Documents\SourceTree\DesignPatterns\tokenizer\tokenizer\obj\Debu
 C:\Users\stefan\Documents\SourceTree\DesignPatterns\tokenizer\tokenizer\obj\Debug\tokenizer.csproj.GenerateResource.Cache
 C:\Users\stefan\Documents\SourceTree\DesignPatterns\tokenizer\tokenizer\obj\Debug\tokenizer.exe
 C:\Users\stefan\Documents\SourceTree\DesignPatterns\tokenizer\tokenizer\obj\Debug\tokenizer.pdb
+C:\Users\Alex\Documents\designpatterns\tokenizer\tokenizer\bin\Debug\tokenizer.exe.config
+C:\Users\Alex\Documents\designpatterns\tokenizer\tokenizer\obj\Debug\tokenizer.exe
+C:\Users\Alex\Documents\designpatterns\tokenizer\tokenizer\obj\Debug\tokenizer.pdb
+C:\Users\Alex\Documents\designpatterns\tokenizer\tokenizer\bin\Debug\tokenizer.exe
+C:\Users\Alex\Documents\designpatterns\tokenizer\tokenizer\bin\Debug\tokenizer.pdb
+C:\Users\Alex\Documents\designpatterns\tokenizer\tokenizer\obj\Debug\tokenizer.csprojResolveAssemblyReference.cache
+C:\Users\Alex\Documents\designpatterns\tokenizer\tokenizer\obj\Debug\MainWindow.baml
+C:\Users\Alex\Documents\designpatterns\tokenizer\tokenizer\obj\Debug\MainWindow.g.cs
+C:\Users\Alex\Documents\designpatterns\tokenizer\tokenizer\obj\Debug\App.g.cs
+C:\Users\Alex\Documents\designpatterns\tokenizer\tokenizer\obj\Debug\tokenizer_MarkupCompile.cache
+C:\Users\Alex\Documents\designpatterns\tokenizer\tokenizer\obj\Debug\tokenizer.g.resources
+C:\Users\Alex\Documents\designpatterns\tokenizer\tokenizer\obj\Debug\tokenizer.Properties.Resources.resources
+C:\Users\Alex\Documents\designpatterns\tokenizer\tokenizer\obj\Debug\tokenizer.csproj.GenerateResource.Cache

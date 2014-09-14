@@ -45,10 +45,11 @@ namespace tokenizer
             tokenizer.Add("\\<", 14); // lt
             tokenizer.Add("\\>", 15); // gt
             tokenizer.Add("\\=", 16); // equals
+            tokenizer.Add(";", 17); //line ending
 
             try
             {
-                tokenizer.Tokenize("if(x < 4) { x = 8 }");
+                tokenizer.Tokenize("int x = 0; if(x < 4) { x = 8 }");
 
                 foreach (Token tok in tokenizer.GetTokenList())
                 {
