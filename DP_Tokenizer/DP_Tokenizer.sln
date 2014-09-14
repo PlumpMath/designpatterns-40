@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DP_Tokenizer", "Tokenizer_A\DP_Tokenizer.csproj", "{8C431716-88FE-4831-84B5-462B05BC7260}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DP_Tokenizer", "DP_Tokenizer\DP_Tokenizer.csproj", "{8C431716-88FE-4831-84B5-462B05BC7260}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
