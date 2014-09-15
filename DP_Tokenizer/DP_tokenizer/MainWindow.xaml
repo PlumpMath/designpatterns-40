@@ -5,6 +5,5 @@
     <Grid>
         <DataGrid HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="299" Width="497" Name="itemGrid">
         </DataGrid>
-
     </Grid>
 </Window>

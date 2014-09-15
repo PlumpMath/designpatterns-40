@@ -8,10 +8,23 @@ namespace DP_Tokenizer
 {
     enum TokenType
     {
+        OpenBracket,
+        CloseBracket,
+        OpenCurlyBracket,
+        CloseCurlyBracket,
+        StartIndex,
+        EndOfIndex,
+        Equals,
+        EndOfStatement,
         Integer,
         Double,
-        Symbol,
-        Operator,
+        GreaterThan,
+        LowerThan,
+        OperatorPlus,
+        OperatorMinus,
+        OperatorDivide,
+        OperatorRaised,
+        OperatorMultiply,
         Keyword,
         Identifier,
         Function

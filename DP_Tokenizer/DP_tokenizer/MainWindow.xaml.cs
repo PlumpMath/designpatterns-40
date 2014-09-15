@@ -27,7 +27,7 @@ namespace DP_Tokenizer
 
             // Set definitions and text file
             List<TokenDefinition> definitions = Grammar.GetDefinitions();
-            TextReader reader = new StreamReader(@"C:\Users\Alex\Documents\test.txt");
+            TextReader reader = new StreamReader(@"C:\Users\Stefan\Documents\test.txt");
 
             Tokenizer tokenizer = new Tokenizer(reader, definitions);
             tokenizer.Tokenize();
