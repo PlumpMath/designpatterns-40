@@ -11,6 +11,7 @@ namespace DP_Tokenizer
     {
         private readonly TextReader _reader;
         private readonly List<TokenDefinition> _tokenDefinitions;
+        private Dictionary<String, String> _tokenPartners;
 
         private TokenList<Token> tokenList;
 
@@ -19,10 +20,11 @@ namespace DP_Tokenizer
         private int _level       = 1;
         private string _lineRemaining;
 
-        public Tokenizer(TextReader reader, List<TokenDefinition> tokenDefinitions)
+        public Tokenizer(TextReader reader, List<TokenDefinition> tokenDefinitions, Dictionary<string, string> tokenPartners)
         {
             _reader = reader;
             _tokenDefinitions = tokenDefinitions;
+            _tokenPartners = tokenPartners;
             nextLine();
         }
 
@@ -46,11 +48,17 @@ namespace DP_Tokenizer
 
                         if (tokenValue == "(" || tokenValue == "{" || tokenValue == "[")
                             _level++;
-                        else if (tokenValue == ")" || tokenValue == "}" || tokenValue == "]")
-                            _level--;
 
-                        Token token = new Token(_lineNumber, _linePostion, _level, tokenValue, tokenDefinition.tokenType);
+                        Token partner = null;
+                        if (tokenDefinition.tokenType == TokenType.Keyword || tokenDefinition.tokenType == TokenType.CloseBracket
+                            || tokenDefinition.tokenType == TokenType.CloseCurlyBracket || tokenDefinition.tokenType == TokenType.EndOfIndex)
+                            partner = findPartner(tokenValue, _level);
+
+                        Token token = new Token(_lineNumber, _linePostion, _level, tokenValue, tokenDefinition.tokenType, partner);
                         tokenList.AddLast(token);
+
+                        if (tokenValue == ")" || tokenValue == "}" || tokenValue == "]")
+                            _level--;
 
                         _linePostion  += matched; 
                         _lineRemaining = _lineRemaining.Substring(matched);
@@ -66,6 +74,24 @@ namespace DP_Tokenizer
                     throw new ParserException("Unexpected character '" + _lineRemaining + "' at line " + _lineNumber + " position" + _linePostion);
                 }
             } 
+        }
+
+        private Token findPartner(string tokenValue, int level)
+        {
+            Token token = null;
+
+            if (_tokenPartners.ContainsKey(tokenValue))
+            {
+                string partner = _tokenPartners[tokenValue];
+
+                foreach (Token lToken in tokenList)
+                {
+                    if (lToken.Value == partner && lToken.Level == level && lToken.Partner == null)
+                        return lToken;
+                }
+            }
+
+            return token;
         }
 
         private void nextLine()

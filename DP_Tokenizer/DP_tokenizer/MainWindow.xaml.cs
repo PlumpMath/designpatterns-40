@@ -12,7 +12,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace DP_Tokenizer
 {
@@ -27,9 +26,16 @@ namespace DP_Tokenizer
 
             // Set definitions and text file
             List<TokenDefinition> definitions = Grammar.GetDefinitions();
-            TextReader reader = new StreamReader(@"C:\Users\Stefan\Documents\test.txt");
+            Dictionary<string, string> partners = new Dictionary<string, string>();
+            partners.Add("else", "if");
+            partners.Add("}", "{");
+            partners.Add(")", "(");
+            partners.Add("]", "[");
 
-            Tokenizer tokenizer = new Tokenizer(reader, definitions);
+            String documents = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "test.txt");
+            TextReader reader = new StreamReader(@"C:\Users\Alex\Documents\test.txt");
+
+            Tokenizer tokenizer = new Tokenizer(reader, definitions, partners);
             tokenizer.Tokenize();
 
             itemGrid.ItemsSource = tokenizer.GetTokenList();
