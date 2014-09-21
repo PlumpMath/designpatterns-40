@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace kipschieten.Controller
+namespace kipschieten.View
 {
     class Game
     {
@@ -25,10 +25,10 @@ namespace kipschieten.Controller
             _mainWindow = new MainWindow();
             _mainWindow.Show();
 
-            startGame(_mainWindow.PlayGrid);
+            startGame(_mainWindow.PlayCanvas);
         }
 
-        private void startGame(Grid playGrid)
+        private void startGame(GameCanvas playGrid)
         {
             _gameManager = new Manager(playGrid);
             

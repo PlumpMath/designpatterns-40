@@ -1,4 +1,5 @@
-﻿using System;
+﻿using kipschieten.View;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,9 +13,9 @@ namespace kipschieten.Model
     class MouseCapture
     {
         private Dictionary<double, double> _clickedCoordinates;
-        private Grid                       _playGrid;
+        private GameCanvas _playGrid;
 
-        public MouseCapture(Grid playGrid)
+        public MouseCapture(GameCanvas playGrid)
         {
             _clickedCoordinates = new Dictionary<double, double>();
 

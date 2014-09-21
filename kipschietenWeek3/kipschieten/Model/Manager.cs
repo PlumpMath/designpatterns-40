@@ -1,8 +1,8 @@
-﻿using kipschieten.Controller;
-using kipschieten.View;
+﻿using kipschieten.View;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,7 +15,7 @@ namespace kipschieten.Model
 {
     class Manager
     {
-        private static int max_chickens = 6;
+        private static int max_chickens = 10;
         private Random _random = new Random();
 
         // Grid bounds
@@ -29,14 +29,12 @@ namespace kipschieten.Model
 
         private Player _player;
         private List<Chicken> _chickens;
-        private List<Unit> _units;
-        private Grid _playGrid;
+        public List<Unit> _units;
+        private GameCanvas _playGrid;
         
         public bool GameOver = false;
 
-        private double clickedX, clickedY;
-
-        public Manager(Grid playGrid)
+        public Manager(GameCanvas playGrid)
         {
             _playGrid       = playGrid;
             _mouseCapture   = new MouseCapture(_playGrid);
@@ -67,24 +65,24 @@ namespace kipschieten.Model
                     double xPos, yPos;
                     xPos = (double)_random.Next(_xMinBounds, _xMaxBounds);
                     yPos = (double)_random.Next(_yMinBounds, _yMaxBounds);
-                    _units.Add(new Chicken(xPos, yPos));
+                    _units.Add(UnitFactory.CreateUnit(UnitEnum.Chicken, xPos, yPos));
                 });
             }
 
             //random amount of trees
-            int startAmountTrees = _random.Next(2);
-            for (int t = 0; t < startAmountChickens; t++)
-            {
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    // set location
-                    // random based on x and y bounds
-                    double xPos, yPos;
-                    xPos = (double)_random.Next(_xMinBounds, _xMaxBounds);
-                    yPos = (double)_random.Next(_yMinBounds, _yMaxBounds);
-                    _units.Add(new Tree(xPos, yPos));
-                });
-            }
+            //int startAmountTrees = _random.Next(2);
+            //for (int t = 0; t < startAmountChickens; t++)
+            //{
+            //    Application.Current.Dispatcher.Invoke(() =>
+            //    {
+            //        // set location
+            //        // random based on x and y bounds
+            //        double xPos, yPos;
+            //        xPos = (double)_random.Next(_xMinBounds, _xMaxBounds);
+            //        yPos = (double)_random.Next(_yMinBounds, _yMaxBounds);
+            //        _units.Add(new Tree(xPos, yPos));
+            //    });
+            //}
         }
 
         public void Update()
@@ -97,50 +95,59 @@ namespace kipschieten.Model
         private void updateChickens()
         {
             Dictionary<double, double> clickedLocations = _mouseCapture.getClicks();
-            if (_units.Count > 0)
-                Console.WriteLine(_units[0].GetType().GetFields().V);
 
-            for (int i = _chickens.Count-1; i >= 0; i--)
+            for (int i = _units.Count-1; i >= 0; i--)
             {
                 foreach(KeyValuePair<double, double> coords in clickedLocations)
                 {
-                    
-                    if (coords.Key >= _chickens[i].margin.Left && coords.Key <= _chickens[i].margin.Left + 50 &&
-                        coords.Value >= _chickens[i].margin.Top && coords.Value <= _chickens[i].margin.Top + 50)
+                    if (_units[i].GetType() == typeof(Chicken) || _units[i].GetType() == typeof(Cow))
                     {
-                        _chickens[i].isShot = true;
+                        PropertyInfo pInfo = _units[i].GetType().GetProperty("isShot");
+                        if (coords.Key >= _units[i].LeftPosition && coords.Key <= _units[i].LeftPosition + 50 &&
+                        coords.Value >= _units[i].TopPosition && coords.Value <= _units[i].TopPosition + 50)
+                        {
+                            pInfo.SetValue(_units[i], true);
+                        }
                     }
                 }
 
-                if (_chickens[i].margin.Top  >= _yMaxBounds - 40 || _chickens[i].margin.Top  <= 0 ||
-                    _chickens[i].margin.Left >= _xMaxBounds - 40 || _chickens[i].margin.Left <= 0)
-                    _chickens.Remove(_chickens[i]);
+                if (_units[i].TopPosition >= _yMaxBounds - 40 || _units[i].TopPosition <= 0 ||
+                    _units[i].LeftPosition >= _xMaxBounds - 40 || _units[i].LeftPosition <= 0)
+                    _units.Remove(_units[i]);
             }
 
-            foreach (Chicken chicken in _chickens)
+            foreach (Unit unit in _units)
             {
-                chicken.Move();
+                if (unit.CanMove)
+                {
+                    MethodInfo mInfo = unit.GetType().GetMethod("Move");
+                    mInfo.Invoke(unit, null);
+                }
             }
 
             int randomNum = _random.Next(35);
-            if (randomNum % 2 == 0 && _chickens.Count < max_chickens)
+            if (randomNum % 2 == 0 && _units.Count < max_chickens)
             {
                 // set location
                 double xPos, yPos;
                 xPos = (double)_random.Next(_xMinBounds, _xMaxBounds);
                 yPos = (double)_random.Next(_yMinBounds, _yMaxBounds);
-                
-                Chicken chicken = new Chicken(xPos, yPos);
-                _chickens.Add(chicken);
+
+                UnitEnum unitType = (UnitEnum)_random.Next(1, 3);
+                Unit unit = UnitFactory.CreateUnit(unitType, xPos, yPos);
+                _units.Add(unit);
             }
         }
 
         private void updatePlayer()
         {
-            foreach(Chicken chicken in _chickens)
+            foreach (Unit unit in _units)
             {
-                if (chicken.isShot)
+                PropertyInfo pInfo = unit.GetType().GetProperty("isShot");
+                if ((bool)pInfo.GetValue(unit, null))
+                {
                     _player.addPoint();
+                }
             }
 
             if (_player.score == 3)
@@ -151,36 +158,23 @@ namespace kipschieten.Model
         {
             try
             {
+                for (int i = _units.Count - 1; i >= 0; i--)
+                {
+                    if (_units[i].CanBeShot && (_units[i].GetType() == typeof(Chicken) || _units[i].GetType() == typeof(Cow)))
+                    {
+                        PropertyInfo pInfo = _units[i].GetType().GetProperty("isShot");
+                        if ((bool)pInfo.GetValue(_units[i], null))
+                        {
+                            _units.Remove(_units[i]);
+                            continue;
+                        }
+                    }
+                }
+
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    _playGrid.Children.Clear();
+                    _playGrid.DrawUnits(_units);
                 });
-
-                for (int i = _chickens.Count - 1; i >= 0; i--)
-                {
-                    if (_chickens[i].isShot)
-                    {
-                        _chickens.Remove(_chickens[i]);
-                        continue;
-                    }
-
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        // Add the chicken
-                        var img = new Image
-                        {
-                            Source =
-                                new BitmapImage(
-                                new Uri(_chickens[i].imgChickens)),
-                            Margin = _chickens[i].margin,
-                            Width = 50,
-                            HorizontalAlignment = HorizontalAlignment.Left,
-                            VerticalAlignment   = VerticalAlignment.Top
-                        };
-                        _playGrid.Children.Add(img);
-                    });
-
-                }
             }
             catch (Exception e)
             {

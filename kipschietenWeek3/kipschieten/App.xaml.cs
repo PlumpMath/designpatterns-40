@@ -1,4 +1,4 @@
-﻿using kipschieten.Controller;
+﻿using kipschieten.View;
 using System;
 using System.Collections.Generic;
 using System.Configuration;

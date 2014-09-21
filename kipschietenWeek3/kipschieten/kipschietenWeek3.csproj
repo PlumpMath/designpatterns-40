@@ -53,7 +53,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Controller\Unit.cs" />
+    <Compile Include="Model\UnitEnum.cs" />
+    <Compile Include="Model\UnitFactory.cs" />
+    <Compile Include="View\Cow.cs" />
+    <Compile Include="View\GameCanvas.cs" />
+    <Compile Include="View\Unit.cs" />
     <Compile Include="View\Tree.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -101,7 +105,12 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="View\chicken.png">
+    <None Include="Resources\chicken.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cow.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

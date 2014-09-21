@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace kipschieten.Controller
+namespace kipschieten.Model
 {
-    abstract class Unit
+    enum UnitEnum
     {
+        Tree,
+        Cow,
+        Chicken
     }
 }

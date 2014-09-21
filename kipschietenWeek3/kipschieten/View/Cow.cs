@@ -1,17 +1,12 @@
-﻿using kipschieten.View;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media.Imaging;
 
 namespace kipschieten.View
 {
-    class Chicken : Unit
+    class Cow : Unit
     {
         private bool _isShot = false;
         public bool isShot { get { return _isShot; } set { _isShot = value; } }
@@ -22,9 +17,9 @@ namespace kipschieten.View
         private double _xStep = 0;
         private double _yStep = 0;
 
-        public Chicken(double xPos, double yPos)
+        public Cow(double xPos, double yPos)
         {
-            UnitImage = AppDomain.CurrentDomain.BaseDirectory + "Resources\\chicken.png";
+            UnitImage = AppDomain.CurrentDomain.BaseDirectory + "Resources\\cow.png";
             CanBeShot = true;
             CanMove   = true;
 
