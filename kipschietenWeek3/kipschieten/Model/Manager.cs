@@ -55,8 +55,8 @@ namespace kipschieten.Model
             _units      = new List<Unit>();
 
             // random amount chickens
-            int startAmountChickens = _random.Next(4);
-            for (int x = 0; x < startAmountChickens; x++)
+            int startAmountUnits = _random.Next(4);
+            for (int x = 0; x < startAmountUnits; x++)
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
@@ -65,34 +65,40 @@ namespace kipschieten.Model
                     double xPos, yPos;
                     xPos = (double)_random.Next(_xMinBounds, _xMaxBounds);
                     yPos = (double)_random.Next(_yMinBounds, _yMaxBounds);
-                    _units.Add(UnitFactory.CreateUnit(UnitEnum.Chicken, xPos, yPos));
+
+                    // Set random unit on screen
+                    UnitEnum unitType = (UnitEnum)_random.Next(1, 3);
+                    Unit unit = UnitFactory.CreateUnit(unitType, xPos, yPos);
+                    _units.Add(unit);
                 });
             }
 
-            //random amount of trees
-            //int startAmountTrees = _random.Next(2);
-            //for (int t = 0; t < startAmountChickens; t++)
-            //{
-            //    Application.Current.Dispatcher.Invoke(() =>
-            //    {
-            //        // set location
-            //        // random based on x and y bounds
-            //        double xPos, yPos;
-            //        xPos = (double)_random.Next(_xMinBounds, _xMaxBounds);
-            //        yPos = (double)_random.Next(_yMinBounds, _yMaxBounds);
-            //        _units.Add(new Tree(xPos, yPos));
-            //    });
-            //}
+            // set trees
+            int startAmountTrees = 5;
+            for(int t = 0; t < startAmountTrees; t++) {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    // set location
+                    // random based on x and y bounds
+                    double xPos, yPos;
+                    xPos = (double)_random.Next(_xMinBounds, _xMaxBounds);
+                    yPos = (double)_random.Next(_yMinBounds, _yMaxBounds);
+
+                    // Set random unit on screen
+                    Unit unit = UnitFactory.CreateUnit(UnitEnum.Tree, xPos, yPos);
+                    _units.Add(unit);
+                });
+            }
         }
 
         public void Update()
         {
-            updateChickens();
+            updateUnits();
             updatePlayer();
             updateRender();
         }
 
-        private void updateChickens()
+        private void updateUnits()
         {
             Dictionary<double, double> clickedLocations = _mouseCapture.getClicks();
 
@@ -122,6 +128,19 @@ namespace kipschieten.Model
                 {
                     MethodInfo mInfo = unit.GetType().GetMethod("Move");
                     mInfo.Invoke(unit, null);
+
+                    for (int i = 0; i < _units.Count - 1; i++)
+                    {
+                        if (_units[i].GetType() == typeof(Tree))
+                        {
+                            if ((unit.TopPosition >= _units[i].TopPosition - 50 && unit.TopPosition <= _units[i].TopPosition + 50) &&
+                                (unit.LeftPosition >= _units[i].LeftPosition && unit.LeftPosition <= _units[i].LeftPosition + 50))
+                            {
+                                MethodInfo methodInfo = unit.GetType().GetMethod("ChangePosition");
+                                methodInfo.Invoke(unit, null);
+                            }
+                        }
+                    }
                 }
             }
 
@@ -132,9 +151,24 @@ namespace kipschieten.Model
                 double xPos, yPos;
                 xPos = (double)_random.Next(_xMinBounds, _xMaxBounds);
                 yPos = (double)_random.Next(_yMinBounds, _yMaxBounds);
-
                 UnitEnum unitType = (UnitEnum)_random.Next(1, 3);
-                Unit unit = UnitFactory.CreateUnit(unitType, xPos, yPos);
+                Unit unit = null;
+                // check for spawn on a tree
+                for (int u = 0; u < _units.Count - 1; u++)
+                {
+                    if (_units[u].GetType() == typeof(Tree))
+                    {
+                        if(_units[u].TopPosition >= _yMaxBounds - 40 || _units[u].TopPosition <= 0 ||
+                            _units[u].LeftPosition >= _xMaxBounds - 40 || _units[u].LeftPosition <= 0)
+                        {
+                            unit = UnitFactory.CreateUnit(unitType, xPos+60, yPos+60);
+                        }
+                        else
+                        {
+                            unit = UnitFactory.CreateUnit(unitType, xPos, yPos);
+                        }
+                    }
+                }
                 _units.Add(unit);
             }
         }
@@ -143,10 +177,13 @@ namespace kipschieten.Model
         {
             foreach (Unit unit in _units)
             {
-                PropertyInfo pInfo = unit.GetType().GetProperty("isShot");
-                if ((bool)pInfo.GetValue(unit, null))
+                if (unit.GetType() == typeof(Chicken) || unit.GetType() == typeof(Cow))
                 {
-                    _player.addPoint();
+                    PropertyInfo pInfo = unit.GetType().GetProperty("isShot");
+                    if ((bool)pInfo.GetValue(unit, null))
+                    {
+                        _player.addPoint();
+                    }
                 }
             }
 

@@ -19,6 +19,11 @@ namespace kipschieten.View
         public double LeftPosition;
         public double TopPosition;
 
-
+        public void setLocation(double xPos, double yPos)
+        {
+            // set location when new added
+            LeftPosition = xPos;
+            TopPosition = yPos;
+        }
     }
 }

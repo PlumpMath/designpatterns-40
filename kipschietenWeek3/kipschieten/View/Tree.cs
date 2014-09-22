@@ -11,7 +11,11 @@ namespace kipschieten.View
     {
         public Tree(double xPos, double yPos)
         {
+            UnitImage = AppDomain.CurrentDomain.BaseDirectory + "Resources\\tree.png";
+            CanBeShot = false;
+            CanMove = false;
 
+            setLocation(xPos, yPos);
         }
     }
 }

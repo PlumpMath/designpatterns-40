@@ -26,7 +26,8 @@ namespace kipschieten.Model
         private void gridClicked(object sender, MouseButtonEventArgs e)
         {
             Point clickPoint = e.GetPosition(_playGrid);
-            _clickedCoordinates.Add(clickPoint.X, clickPoint.Y);
+            if(!_clickedCoordinates.ContainsKey(clickPoint.X)) 
+                _clickedCoordinates.Add(clickPoint.X, clickPoint.Y);
         }
 
         public Dictionary<double, double> getClicks()

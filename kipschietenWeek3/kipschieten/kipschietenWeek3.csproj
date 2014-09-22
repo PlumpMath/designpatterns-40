@@ -57,6 +57,7 @@
     <Compile Include="Model\UnitFactory.cs" />
     <Compile Include="View\Cow.cs" />
     <Compile Include="View\GameCanvas.cs" />
+    <Compile Include="View\MovingUnit.cs" />
     <Compile Include="View\Unit.cs" />
     <Compile Include="View\Tree.cs" />
     <Page Include="MainWindow.xaml">
@@ -111,6 +112,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\cow.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tree.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

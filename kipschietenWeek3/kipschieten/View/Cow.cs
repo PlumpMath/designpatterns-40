@@ -6,16 +6,8 @@ using System.Threading.Tasks;
 
 namespace kipschieten.View
 {
-    class Cow : Unit
+    class Cow : MovingUnit
     {
-        private bool _isShot = false;
-        public bool isShot { get { return _isShot; } set { _isShot = value; } }
-
-        public int xLocation = 0;
-        public int yLocation = 0;
-
-        private double _xStep = 0;
-        private double _yStep = 0;
 
         public Cow(double xPos, double yPos)
         {
@@ -31,20 +23,6 @@ namespace kipschieten.View
                 _yStep = random.Next(-4, 4);
 
             setLocation(xPos, yPos);
-        }
-
-        public void Move()
-        {
-            // margin for location in grid
-            LeftPosition += _xStep;
-            TopPosition += _yStep;
-        }
-
-        public void setLocation(double xPos, double yPos)
-        {
-            // set location when new added
-            LeftPosition = xPos;
-            TopPosition = yPos;
         }
     }
 }
