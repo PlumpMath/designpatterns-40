@@ -11,7 +11,7 @@ namespace DP_Tokenizer
     {
         private readonly TextReader _reader;
         private readonly List<TokenDefinition> _tokenDefinitions;
-        private Dictionary<String, String> _tokenPartners;
+        private readonly List<TokenPartner> _tokenPartners;
 
         private TokenList<Token> tokenList;
 
@@ -20,7 +20,7 @@ namespace DP_Tokenizer
         private int _level       = 1;
         private string _lineRemaining;
 
-        public Tokenizer(TextReader reader, List<TokenDefinition> tokenDefinitions, Dictionary<string, string> tokenPartners)
+        public Tokenizer(TextReader reader, List<TokenDefinition> tokenDefinitions, List<TokenPartner> tokenPartners)
         {
             _reader = reader;
             _tokenDefinitions = tokenDefinitions;
@@ -50,12 +50,17 @@ namespace DP_Tokenizer
                             _level++;
 
                         Token partner = null;
-                        if (tokenDefinition.tokenType == TokenType.Keyword || tokenDefinition.tokenType == TokenType.CloseBracket
-                            || tokenDefinition.tokenType == TokenType.CloseCurlyBracket || tokenDefinition.tokenType == TokenType.EndOfIndex)
-                            partner = findPartner(tokenValue, _level);
+                        if (tokenDefinition.tokenType == TokenType.Else || tokenDefinition.tokenType == TokenType.ElseIf ||
+                            tokenDefinition.tokenType == TokenType.CloseBracket || tokenDefinition.tokenType == TokenType.While ||
+                            tokenDefinition.tokenType == TokenType.CloseCurlyBracket || tokenDefinition.tokenType == TokenType.CloseParenthesis)
+                            partner = findPartner(tokenDefinition.tokenType, _level);
 
                         Token token = new Token(_lineNumber, _linePostion, _level, tokenValue, tokenDefinition.tokenType, partner);
                         tokenList.AddLast(token);
+
+                        // Add token to the found partner
+                        if (partner != null)
+                            partner.Partner = token;
 
                         if (tokenValue == ")" || tokenValue == "}" || tokenValue == "]")
                             _level--;
@@ -76,18 +81,20 @@ namespace DP_Tokenizer
             } 
         }
 
-        private Token findPartner(string tokenValue, int level)
+        private Token findPartner(TokenType tokenType, int level)
         {
             Token token = null;
 
-            if (_tokenPartners.ContainsKey(tokenValue))
+            foreach (TokenPartner tokenPartner in _tokenPartners)
             {
-                string partner = _tokenPartners[tokenValue];
 
-                foreach (Token lToken in tokenList)
+                if (tokenPartner.Token == tokenType)
                 {
-                    if (lToken.Value == partner && lToken.Level == level && lToken.Partner == null)
-                        return lToken;
+                    foreach (Token lToken in tokenList)
+                    {
+                        if (lToken.Type == tokenPartner.Partner && lToken.Level == level && lToken.Partner == null)
+                            return lToken;
+                    }
                 }
             }
 

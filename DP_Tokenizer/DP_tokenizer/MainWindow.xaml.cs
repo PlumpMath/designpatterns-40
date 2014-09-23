@@ -25,12 +25,8 @@ namespace DP_Tokenizer
             InitializeComponent();
 
             // Set definitions and text file
-            List<TokenDefinition> definitions = Grammar.GetDefinitions();
-            Dictionary<string, string> partners = new Dictionary<string, string>();
-            partners.Add("else", "if");
-            partners.Add("}", "{");
-            partners.Add(")", "(");
-            partners.Add("]", "[");
+            List<TokenDefinition> definitions   = Grammar.GetDefinitions();
+            List<TokenPartner> partners         = Grammar.GetPartners();
 
             String documents = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "test.txt");
             TextReader reader = new StreamReader(@"C:\Users\Alex\Documents\test.txt");

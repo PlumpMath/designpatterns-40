@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,26 +9,23 @@ namespace DP_Tokenizer
 {
     public class TokenList<T> : IEnumerable<T>
     {
-        private class Node<T> 
+        public class Node<T> 
         {
             public Node<T> Next;
+            public Node<T> Previous;
             public T Data;
 
             public Node(T d)
             {
                 Data = d;
                 Next = null;
-            }
-
-            public Node(T d, Node<T> n)
-            {
-                Data = d;
-                Next = n;
+                Previous = null;
             }
         }
 
         private int _size;
         private Node<T> head;
+        private Node<T> tail;
 
         public int Count { get { return _size; } }
 
@@ -42,76 +40,132 @@ namespace DP_Tokenizer
             return (_size == 0);
         }
 
-        public void AddAfter(T data, T afterNode)
+        public void addFirstItem(T item)
         {
-            Node<T> current = head;
-            bool matched = false;
-            while (!(matched = current.Data.Equals(afterNode)) && current.Next != null)
-                current = current.Next;
-
-            if (matched)
-            {
-                Node<T> newNode = new Node<T>(data);
-                if (current.Next != null)
-                    newNode.Next = current.Next;
-
-                current.Next = newNode;
-                _size++;
-            }
+            head = new Node<T>(item);
+            tail = head;
+            head.Next = tail;
+            head.Previous = tail;
         }
 
-        public void AddBefore(T data, T beforeData)
+        public void AddAfter(T existingData, T newData)
         {
-            Node<T> current = head;
-            bool matched = false;
-            while (current.Next != null && !(matched = current.Next.Data.Equals(beforeData)))
-                current = current.Next;
+            Node<T> node = Find(existingData);
+            if (node == null)
+                throw new ArgumentException("existingData doesn't exist in the list");
+            AddAfter(node, newData);
+        }
 
-            if (matched)
-            {
-                Node<T> newNode = new Node<T>(data);
-                if (current.Next != null)
-                    newNode.Next = current.Next;
+        public void AddAfter(Node<T> node, T newData)
+        {
+            if (node == null)
+                throw new ArgumentNullException("node");
+            Node<T> temp = findNode(head, node.Data);
+            if (temp != node)
+                throw new InvalidOperationException("node doesn't exist in the list");
 
-                current.Next = newNode;
-                _size++;
-            }
+            Node<T> newNode = new Node<T>(newData);
+            newNode.Next = node.Next;
+            node.Next.Previous = newNode;
+            newNode.Previous = node;
+            node.Next = newNode;
+
+            // if the node adding is tail node, then repointing tail node
+            if (node == tail)
+                tail = newNode;
+            _size++;
+        }
+
+        public void AddBefore(T existingData, T newData)
+        {
+            Node<T> node = Find(existingData);
+            if (node == null)
+                throw new ArgumentException("existingData doesn't exist in the list");
+            AddBefore(node, newData);
+        }
+
+        public void AddBefore(Node<T> node, T newData)
+        {
+            if (node == null)
+                throw new ArgumentNullException("Node");
+
+            Node<T> temp = findNode(head, node.Data);
+            if (temp != node)
+                throw new InvalidOperationException("Node doesn't exist in the list");
+
+            Node<T> newNode     = new Node<T>(newData);
+            node.Previous.Next  = newNode;
+            newNode.Previous    = node.Previous;
+            newNode.Next        = node;
+            node.Previous       = newNode;
+
+            if (node == head)
+                head = newNode;
+            _size++;
         }
 
         public void AddFirst(T data)
         {
-            Node<T> newNode = new Node<T>(data, head);
-            head = newNode;
+            if (head == null)
+                addFirstItem(data);
+            else
+            {
+                Node<T> newNode     = new Node<T>(data);
+                head.Previous       = newNode;
+                newNode.Previous    = tail;
+                newNode.Next        = head;
+                tail.Next           = newNode;
+                head                = newNode;
+            }
+
             _size++;
         }
 
 
         public void AddLast(T data)
         {
+            
             if (head == null)
-            {
-                Node<T> newNode = new Node<T>(data);
-                head = newNode;
-            }
+                addFirstItem(data);
             else
             {
-                Node<T> current = head;
-                while (current.Next != null)
-                    current = current.Next;
-
-                Node<T> newNode = new Node<T>(data);
-                current.Next = newNode;
+                Node<T> newNode  = new Node<T>(data);
+                tail.Next        = newNode;
+                newNode.Next     = head;
+                newNode.Previous = tail;
+                tail             = newNode;
+                head.Previous    = tail;
             }
+        
             _size++;
+        }
+
+        public Node<T> Find(T data)
+        {
+            Node<T> node = findNode(head, data);
+            return node;
+        }
+
+        private Node<T> findNode(Node<T> node, T valueToCompare)
+        {
+            Node<T> result = null;
+            if (Comparer.Equals(node.Data, valueToCompare))
+                result = node;
+            else if (result == null && node.Next != head)
+                result = findNode(node.Next, valueToCompare);
+            return result;
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            var node = head;
-            while (node != null)
+            Node<T> current = head;
+            if (current != null)
             {
-                yield return node.Data;
-                node = node.Next;
+                do
+                {
+                    yield return current.Data;
+                    current = current.Next;
+                } while (current != head);
             }
         }
 

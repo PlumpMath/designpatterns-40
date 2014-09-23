@@ -13,7 +13,8 @@ namespace DP_Tokenizer
         public int Level { get; private set; }
         public string Value { get; private set; }
         public TokenType Type { get; private set; }
-        public Token Partner { get; private set; }
+        public String PartnerValue { get { return (Partner != null) ? Partner.Value : ""; } set { Partner.Value = value; } }
+        public Token Partner { get; set; }
 
         public Token(int lineNumber, int linePosition, int level, string value, TokenType type, Token partner)
         {

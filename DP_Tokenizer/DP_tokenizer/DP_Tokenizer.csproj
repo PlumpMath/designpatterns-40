@@ -61,6 +61,7 @@
     <Compile Include="Tokenizer.cs" />
     <Compile Include="TokenDefinition.cs" />
     <Compile Include="TokenList.cs" />
+    <Compile Include="TokenPartner.cs" />
     <Compile Include="TokenType.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
