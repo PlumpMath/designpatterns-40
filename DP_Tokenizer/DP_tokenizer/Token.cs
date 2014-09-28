@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DP_Tokenizer
 {
-    class Token
+    public class Token
     {
         public int LineNumber { get; private set; }
         public int LinePosition { get; private set; }
