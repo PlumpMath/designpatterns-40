@@ -133,8 +133,25 @@ namespace kipschieten.Model
                     {
                         if (_units[i].GetType() == typeof(Tree))
                         {
-                            if ((unit.TopPosition >= _units[i].TopPosition - 50 && unit.TopPosition <= _units[i].TopPosition + 50) &&
-                                (unit.LeftPosition >= _units[i].LeftPosition && unit.LeftPosition <= _units[i].LeftPosition + 50))
+                            //if ((unit.TopPosition >= _units[i].TopPosition - 50 && unit.TopPosition <= _units[i].TopPosition + 50) &&
+                            //    (unit.LeftPosition >= _units[i].LeftPosition && unit.LeftPosition <= _units[i].LeftPosition + 50))
+                            //{
+                            //    MethodInfo methodInfo = unit.GetType().GetMethod("ChangePosition");
+                            //    methodInfo.Invoke(unit, null);
+                            //}
+
+                            //For left bounds
+                            if ((unit.LeftPosition + 50 >= _units[i].LeftPosition && unit.LeftPosition + 50 <= _units[i].LeftPosition + 50) &&
+                                (unit.TopPosition + 50 >= _units[i].TopPosition && unit.TopPosition <= _units[i].TopPosition)
+                               )
+                            {
+                                MethodInfo methodInfo = unit.GetType().GetMethod("ChangePosition");
+                                methodInfo.Invoke(unit, null);
+                            }
+
+                            if((unit.LeftPosition <= _units[i].LeftPosition + 50 && unit.LeftPosition + 50 >= _units[i].LeftPosition) && 
+                               (unit.TopPosition + 50 >= _units[i].TopPosition && unit.TopPosition <= _units[i].TopPosition)
+                              )
                             {
                                 MethodInfo methodInfo = unit.GetType().GetMethod("ChangePosition");
                                 methodInfo.Invoke(unit, null);
