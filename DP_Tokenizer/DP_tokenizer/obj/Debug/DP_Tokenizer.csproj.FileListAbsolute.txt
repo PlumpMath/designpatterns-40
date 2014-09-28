@@ -26,3 +26,6 @@ C:\Users\Alex\Documents\designpatterns\DP_Tokenizer\DP_Tokenizer\obj\Debug\Token
 C:\Users\Alex\Documents\designpatterns\DP_Tokenizer\DP_Tokenizer\obj\Debug\Tokenizer_A.g.resources
 C:\Users\Alex\Documents\designpatterns\DP_Tokenizer\DP_Tokenizer\obj\Debug\DP_Tokenizer.Properties.Resources.resources
 C:\Users\Alex\Documents\designpatterns\DP_Tokenizer\DP_Tokenizer\obj\Debug\DP_Tokenizer.csproj.GenerateResource.Cache
+C:\Users\Alex\Repositories\designpatterns\DP_Tokenizer\DP_Tokenizer\bin\Debug\Tokenizer_A.exe.config
+C:\Users\Alex\Repositories\designpatterns\DP_Tokenizer\DP_Tokenizer\obj\Debug\Tokenizer_A.exe
+C:\Users\Alex\Repositories\designpatterns\DP_Tokenizer\DP_Tokenizer\obj\Debug\Tokenizer_A.pdb

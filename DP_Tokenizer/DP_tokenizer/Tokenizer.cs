@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DP_Tokenizer
 {
@@ -13,7 +10,7 @@ namespace DP_Tokenizer
         private readonly List<TokenDefinition> _tokenDefinitions;
         private readonly List<TokenPartner> _tokenPartners;
 
-        private TokenList<Token> tokenList;
+        private TokenList<Token> _tokenList;
 
         private int _lineNumber  = 0;
         private int _linePostion = 1;
@@ -30,7 +27,7 @@ namespace DP_Tokenizer
 
         public void Tokenize()
         {
-            tokenList = new TokenList<Token>();
+            _tokenList = new TokenList<Token>();
 
             while (_lineRemaining != null)
             {
@@ -56,7 +53,7 @@ namespace DP_Tokenizer
                             partner = findPartner(tokenDefinition.tokenType, _level);
 
                         Token token = new Token(_lineNumber, _linePostion, _level, tokenValue, tokenDefinition.tokenType, partner);
-                        tokenList.AddLast(token);
+                        _tokenList.AddLast(token);
 
                         // Add token to the found partner
                         if (partner != null)
@@ -83,22 +80,7 @@ namespace DP_Tokenizer
 
         private Token findPartner(TokenType tokenType, int level)
         {
-            Token token = null;
-
-            foreach (TokenPartner tokenPartner in _tokenPartners)
-            {
-
-                if (tokenPartner.Token == tokenType)
-                {
-                    foreach (Token lToken in tokenList)
-                    {
-                        if (lToken.Type == tokenPartner.Partner && lToken.Level == level && lToken.Partner == null)
-                            return lToken;
-                    }
-                }
-            }
-
-            return token;
+            return (from tokenPartner in _tokenPartners where tokenPartner.Token == tokenType from lToken in _tokenList where lToken.Type == tokenPartner.Partner && lToken.Level == level && lToken.Partner == null select lToken).FirstOrDefault();
         }
 
         private void nextLine()
@@ -114,7 +96,7 @@ namespace DP_Tokenizer
 
         public TokenList<Token> GetTokenList()
         {
-            return tokenList;
+            return _tokenList;
         }
     }
 }
