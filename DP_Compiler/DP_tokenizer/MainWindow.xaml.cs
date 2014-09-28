@@ -37,6 +37,10 @@ namespace DP_Tokenizer
             tokenizer.Tokenize();
 
             itemGrid.ItemsSource = tokenizer.GetTokenList();
+
+            // Send all tokens from tokenlist to parser
+            ParseExpression parseExpression = new ParseExpression(tokenizer.GetTokenList());
+            
         }
     }
 }

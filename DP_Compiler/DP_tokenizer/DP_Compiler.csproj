@@ -56,6 +56,7 @@
     <Compile Include="Grammar.cs" />
     <Compile Include="IMatcher.cs" />
     <Compile Include="ParseException.cs" />
+    <Compile Include="ParseExpression.cs" />
     <Compile Include="RegexMatcher.cs" />
     <Compile Include="Token.cs" />
     <Compile Include="Tokenizer.cs" />
