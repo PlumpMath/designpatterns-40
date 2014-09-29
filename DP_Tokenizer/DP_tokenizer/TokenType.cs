@@ -43,6 +43,7 @@ namespace DP_Tokenizer
         OpenBracket,
         CloseBracket,
         Comparator,
-        Logical
+        Logical,
+        Show
     }
 }

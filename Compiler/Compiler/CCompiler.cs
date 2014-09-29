@@ -77,9 +77,25 @@ namespace Compiler
                 case TokenType.While:
                     ParseWhileStatement();
                     break;
+                case TokenType.Show:
+                    ParseShow();
+                    break;
                 default:
                     throw new Exception("Expected statement identifier");
             }
+        }
+
+        private void ParseShow()
+        {
+            Match(TokenType.Show);
+            Match(TokenType.OpenParenthesis);
+
+            object parameters = ParseExpression();
+
+            Match(TokenType.CloseParenthesis);
+            Match(TokenType.EOL);
+
+            _compileCommands.AddLast(new []{"$show", parameters});
         }
 
         private void ParseIfStatement()
@@ -130,6 +146,8 @@ namespace Compiler
 
             Match(TokenType.CloseParenthesis);
 
+            _compileCommands.AddLast(new[] { "$ifElse", condition, new[] { "$goto", _elseLabels.Push() } });
+
             bool hasBrackets = false;
             if (PeekNext().Type == TokenType.OpenCurlyBracket)
             {
@@ -143,11 +161,13 @@ namespace Compiler
             } while (hasBrackets && PeekNext().Type != TokenType.CloseCurlyBracket);
 
             if (hasBrackets)
-                Match(TokenType.CloseParenthesis);
-
-            _compileCommands.AddLast(new[] { "$ifElse", condition, new[] {"$goto", _elseLabels.Push()} });
+                Match(TokenType.CloseCurlyBracket);
 
             Match(TokenType.Else);
+
+            _compileCommands.AddLast(new [] {"$goto", _endIfLabels.Push()});
+            _compileCommands.AddLast(new[] { _elseLabels.Pop() });
+
             bool elseHasBrackets = false;
             if (PeekNext().Type == TokenType.OpenCurlyBracket)
             {
@@ -160,7 +180,7 @@ namespace Compiler
             if (elseHasBrackets)
                 Match(TokenType.CloseCurlyBracket);
 
-            _compileCommands.AddLast(new []{ _elseLabels.Pop() });
+            _compileCommands.AddLast(new [] {_endIfLabels.Pop()});
         }
 
 

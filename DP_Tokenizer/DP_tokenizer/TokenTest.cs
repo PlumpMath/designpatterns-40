@@ -14,7 +14,7 @@ namespace DP_Tokenizer
             var writer = new StreamWriter(stream);
             //writer.Write("show( x );");
 
-            writer.Write("y = 1; x = 3 + 6 * y; while ( x != 0 || y < 3 ) { x = x - 1; y = y - 1; }");
+            writer.Write("x = 4; if ( x == 0 ) show( x + 3 ); else show( x - 2 );");
 
             writer.Flush();
             stream.Position = 0;

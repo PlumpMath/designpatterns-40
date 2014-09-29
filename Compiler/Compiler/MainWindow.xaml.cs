@@ -30,6 +30,7 @@ namespace Compiler
             compiler.Compile();
 
             var compTokens = compiler.GetCompilerTokens();
+            var ding = true;
         }
     }
 }
