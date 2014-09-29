@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DP_Tokenizer
 {
-    enum TokenType
+    public enum TokenType
     {
         KeyIdentifier,
         Function,

@@ -24,15 +24,17 @@ namespace DP_Tokenizer
         }
 
         private int _size;
-        private Node<T> head;
-        private Node<T> tail;
+        private Node<T> _head;
+        private Node<T> _tail;
 
         public int Count { get { return _size; } }
+        public Node<T> Head { get { return _head; } }
+        public Node<T> Tail { get { return _tail; } } 
 
         public TokenList()
         {
             _size = 0;
-            head  = null;
+            _head  = null;
         }
 
         public bool isEmpty()
@@ -42,10 +44,10 @@ namespace DP_Tokenizer
 
         public void addFirstItem(T item)
         {
-            head = new Node<T>(item);
-            tail = head;
-            head.Next = tail;
-            head.Previous = tail;
+            _head = new Node<T>(item);
+            _tail = _head;
+            _head.Next = _tail;
+            _head.Previous = _tail;
         }
 
         public void AddAfter(T existingData, T newData)
@@ -60,7 +62,7 @@ namespace DP_Tokenizer
         {
             if (node == null)
                 throw new ArgumentNullException("node");
-            Node<T> temp = findNode(head, node.Data);
+            Node<T> temp = findNode(_head, node.Data);
             if (temp != node)
                 throw new InvalidOperationException("node doesn't exist in the list");
 
@@ -71,8 +73,8 @@ namespace DP_Tokenizer
             node.Next = newNode;
 
             // if the node adding is tail node, then repointing tail node
-            if (node == tail)
-                tail = newNode;
+            if (node == _tail)
+                _tail = newNode;
             _size++;
         }
 
@@ -89,7 +91,7 @@ namespace DP_Tokenizer
             if (node == null)
                 throw new ArgumentNullException("Node");
 
-            Node<T> temp = findNode(head, node.Data);
+            Node<T> temp = findNode(_head, node.Data);
             if (temp != node)
                 throw new InvalidOperationException("Node doesn't exist in the list");
 
@@ -99,23 +101,23 @@ namespace DP_Tokenizer
             newNode.Next        = node;
             node.Previous       = newNode;
 
-            if (node == head)
-                head = newNode;
+            if (node == _head)
+                _head = newNode;
             _size++;
         }
 
         public void AddFirst(T data)
         {
-            if (head == null)
+            if (_head == null)
                 addFirstItem(data);
             else
             {
                 Node<T> newNode     = new Node<T>(data);
-                head.Previous       = newNode;
-                newNode.Previous    = tail;
-                newNode.Next        = head;
-                tail.Next           = newNode;
-                head                = newNode;
+                _head.Previous       = newNode;
+                newNode.Previous    = _tail;
+                newNode.Next        = _head;
+                _tail.Next           = newNode;
+                _head                = newNode;
             }
 
             _size++;
@@ -125,16 +127,16 @@ namespace DP_Tokenizer
         public void AddLast(T data)
         {
             
-            if (head == null)
+            if (_head == null)
                 addFirstItem(data);
             else
             {
                 Node<T> newNode  = new Node<T>(data);
-                tail.Next        = newNode;
-                newNode.Next     = head;
-                newNode.Previous = tail;
-                tail             = newNode;
-                head.Previous    = tail;
+                _tail.Next        = newNode;
+                newNode.Next     = _head;
+                newNode.Previous = _tail;
+                _tail             = newNode;
+                _head.Previous    = _tail;
             }
         
             _size++;
@@ -142,30 +144,45 @@ namespace DP_Tokenizer
 
         public Node<T> Find(T data)
         {
-            Node<T> node = findNode(head, data);
+            Node<T> node = findNode(_head, data);
             return node;
         }
 
         private Node<T> findNode(Node<T> node, T valueToCompare)
         {
             Node<T> result = null;
-            if (Comparer.Equals(node.Data, valueToCompare))
+            if (Object.Equals(node.Data, valueToCompare))
                 result = node;
-            else if (result == null && node.Next != head)
+            else if (node.Next != _head)
                 result = findNode(node.Next, valueToCompare);
+            return result;
+        }
+
+        public Node<T> GetElementAt(int index)
+        {
+            if (index < 0 && index > _size)
+                return null;
+
+            int i = 0;
+            Node<T> result = _head;
+            while (i < index)
+            {
+                result = result.Next;
+                i++;
+            }
             return result;
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            Node<T> current = head;
+            Node<T> current = _head;
             if (current != null)
             {
                 do
                 {
                     yield return current.Data;
                     current = current.Next;
-                } while (current != head);
+                } while (current != _head);
             }
         }
 
