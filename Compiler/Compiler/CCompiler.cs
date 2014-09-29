@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Windows.Documents;
 using DP_Tokenizer;
 
 namespace Compiler
@@ -37,20 +38,112 @@ namespace Compiler
                 token = PeakNext();
                 switch (token.Type)
                 {
-                    case TokenType.Identifier: CompileAssignStatement();
+                    case TokenType.Identifier: ParseAssignStatement();
                         break;
-                    case TokenType.If: CompileIfStatement();
+                    case TokenType.If: ParseIfStatement();
                         break;
                 } 
             }
         }
 
-        private void CompileIfStatement()
+        private void Match(TokenType token)
         {
-            
+            if (PeakNext() == null)
+                throw new Exception("Expected " + token.ToString());
+
+            Token actual = GetNext();
+            if (actual.Type != token)
+            {
+                throw new Exception("Expected " + token.ToString());
+            }
         }
 
-        private void CompileAssignStatement()
+        private object ParseStatement()
+        {
+            switch (PeakNext().Type)
+            {
+                case TokenType.If: ParseIfStatement();
+                    break;
+                case TokenType.Identifier:
+                    ParseAssignStatement();
+                    break;
+            }
+        }
+
+        private void ParseIfStatement()
+        {
+            var token = GetNext();
+            if (token.Type == TokenType.If)
+            {
+                if (token.Partner != null)
+                {
+                    ParseIfElse();
+                    return;
+                }
+            }
+            else
+                throw new Exception("Expected If identifier");
+
+
+
+            Match(TokenType.OpenParenthesis);
+
+            object condition = ParseExpression();
+
+            Match(TokenType.CloseParenthesis);
+
+            bool hasBrackets = false;
+            if (PeakNext().Type == TokenType.OpenCurlyBracket)
+            {
+                GetNext();
+                hasBrackets = true;
+            }
+
+            object statements = ParseStatement();
+
+            if (hasBrackets)
+                Match(TokenType.CloseParenthesis);
+
+            _compileCommands.AddLast(new [] {"$if", condition, statements});
+        }
+
+        private void ParseIfElse()
+        {
+            Match(TokenType.OpenParenthesis);
+
+            object condition = ParseExpression();
+
+            Match(TokenType.CloseParenthesis);
+
+            bool hasBrackets = false;
+            if (PeakNext().Type == TokenType.OpenCurlyBracket)
+            {
+                GetNext();
+                hasBrackets = true;
+            }
+
+            object statements = ParseStatement();
+
+            if (hasBrackets)
+                Match(TokenType.CloseParenthesis);
+
+            Match(TokenType.Else);
+            bool elseHasBrackets = false;
+            if (PeakNext().Type == TokenType.OpenCurlyBracket)
+            {
+                GetNext();
+                elseHasBrackets = true;
+            }
+
+            object elseStatements = ParseStatement();
+
+            if (elseHasBrackets)
+                Match(TokenType.CloseParenthesis);
+
+            _compileCommands.AddLast(new [] {"$ifElse", condition, statements, elseStatements});
+        }
+
+        private void ParseAssignStatement()
         {
             var token = GetNext(); // type or variable-name
 
