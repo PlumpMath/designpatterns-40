@@ -12,7 +12,8 @@ namespace DP_Tokenizer
 
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream);
-            writer.Write("x = 3 + 2 * 4;");
+            //writer.Write("x = 3 + 2 * 4;");
+            writer.Write("while(x < 2) { x = x + 1 }");
             writer.Flush();
             stream.Position = 0;
             
