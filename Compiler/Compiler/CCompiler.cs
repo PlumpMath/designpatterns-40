@@ -34,14 +34,14 @@ namespace Compiler
             return _currentToken == null ? (_currentToken = _tokenList.Head).Data : (_currentToken.Next != null ? (_currentToken = _currentToken.Next).Data : null);
         }
 
-        private Token PeakNext()
+        private Token PeekNext()
         {
             return _currentToken == null ? _tokenList.Head.Data : (_currentToken.Next != null ? _currentToken.Next.Data : null);
         }
 
         public void Compile()
         {
-            while (PeakNext() != null)
+            while (PeekNext() != null)
             {
                 ParseStatement();
             }
@@ -54,7 +54,7 @@ namespace Compiler
 
         private void Match(TokenType token)
         {
-            if (PeakNext() == null)
+            if (PeekNext() == null)
                 throw new Exception("Expected " + token.ToString());
 
             Token actual = GetNext();
@@ -66,7 +66,7 @@ namespace Compiler
 
         private void ParseStatement()
         {
-            switch (PeakNext().Type)
+            switch (PeekNext().Type)
             {
                 case TokenType.If: 
                     ParseIfStatement();
@@ -105,13 +105,16 @@ namespace Compiler
             _compileCommands.AddLast(new [] {"$if", condition, new[] {"$goto", _endIfLabels.Push()} });
 
             bool hasBrackets = false;
-            if (PeakNext().Type == TokenType.OpenCurlyBracket)
+            if (PeekNext().Type == TokenType.OpenCurlyBracket)
             {
                 GetNext();
                 hasBrackets = true;
             }
 
-            ParseStatement();
+            do
+            {
+                ParseStatement();
+            } while (hasBrackets && PeekNext().Type != TokenType.CloseCurlyBracket);
 
             if (hasBrackets)
                 Match(TokenType.CloseCurlyBracket);
@@ -128,13 +131,16 @@ namespace Compiler
             Match(TokenType.CloseParenthesis);
 
             bool hasBrackets = false;
-            if (PeakNext().Type == TokenType.OpenCurlyBracket)
+            if (PeekNext().Type == TokenType.OpenCurlyBracket)
             {
                 GetNext();
                 hasBrackets = true;
             }
 
-            ParseStatement();
+            do
+            {
+                ParseStatement();
+            } while (hasBrackets && PeekNext().Type != TokenType.CloseCurlyBracket);
 
             if (hasBrackets)
                 Match(TokenType.CloseParenthesis);
@@ -143,7 +149,7 @@ namespace Compiler
 
             Match(TokenType.Else);
             bool elseHasBrackets = false;
-            if (PeakNext().Type == TokenType.OpenCurlyBracket)
+            if (PeekNext().Type == TokenType.OpenCurlyBracket)
             {
                 GetNext();
                 elseHasBrackets = true;
@@ -172,13 +178,16 @@ namespace Compiler
             _compileCommands.AddLast(new [] {"$while", condition, new []{"$goto", _endWhileLabels.Push()} });
 
             bool hasBrackets = false;
-            if (PeakNext().Type == TokenType.OpenCurlyBracket)
+            if (PeekNext().Type == TokenType.OpenCurlyBracket)
             {
                 GetNext();
                 hasBrackets = true;
             }
 
-            ParseStatement();
+            do
+            {
+                ParseStatement();
+            } while (hasBrackets && PeekNext().Type != TokenType.CloseCurlyBracket);
 
             if (hasBrackets)
                 Match(TokenType.CloseCurlyBracket);
@@ -336,14 +345,14 @@ namespace Compiler
         {
             return
                 new[] {TokenType.OperatorMultiply, TokenType.OperatorRaised, TokenType.OperatorDivide}.Contains(
-                    PeakNext().Type);
+                    PeekNext().Type);
         }
 
         private bool IsNextTokenAddOp()
         {
             return
                 new[] { TokenType.OperatorPlus, TokenType.OperatorMinus }.Contains(
-                    PeakNext().Type);
+                    PeekNext().Type);
         }
 
         private bool IsNextTokenRelationalOp()
@@ -353,12 +362,12 @@ namespace Compiler
                 {
                     TokenType.Comparator, TokenType.GreaterOrEqThan, TokenType.GreaterThan, TokenType.LowerOrEqThan,
                     TokenType.LowerThan
-                }.Contains(PeakNext().Type);
+                }.Contains(PeekNext().Type);
         }
 
         private bool IsNextTokenLogicalOp()
         {
-            return new[] {TokenType.Logical}.Contains(PeakNext().Type);
+            return new[] {TokenType.Logical}.Contains(PeekNext().Type);
         }
     }
 }
