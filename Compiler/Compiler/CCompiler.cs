@@ -41,13 +41,60 @@ namespace Compiler
                         break;
                     case TokenType.If: CompileIfStatement();
                         break;
+                    case TokenType.While: CompileWhileStatement();
+                        break;
                 } 
             }
         }
 
         private void CompileIfStatement()
         {
+
+        }
+
+        private void CompileWhileStatement()
+        {
+            var token = GetNext();
+
+            if (token.Type == TokenType.While)
+            {
+                token = GetNext();
+                // After while find open bracket
+                if (token.Type == TokenType.OpenParenthesis)
+                {
+                    token = GetNext();
+                    // after open bracket find ID to compile the condition
+                    if (token.Type == TokenType.Identifier)
+                    {
+                        // Compile specific condition
+                        object compileCondition = CompileCondition(token);
+                        token = GetNext();
+                        if (token.Type == TokenType.CloseParenthesis)
+                        {
+                            token = GetNext();
+                            if (token.Type == TokenType.OpenCurlyBracket)
+                            {
+                                object compileStatement = CompileStatement(token);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private object CompileCondition(Token token)
+        {
+            if (IsNextTokenLowerThanSign())
+            {
+                return CompileLowerThan(token);
+            }
             
+            return 0;
+        }
+
+        private object CompileStatement(Token token)
+        {
+            return 0;
         }
 
         private void CompileAssignStatement()
@@ -78,6 +125,16 @@ namespace Compiler
             token = GetNext();
             if (token.Type != TokenType.EOL)
                 throw new Exception("Expected ';'");
+        }
+
+        private object CompileLowerThan(Token token)
+        {
+            return ParseLowerThan(token);
+        }
+
+        private object CompileLowerOrEqThan()
+        {
+            return 0;
         }
 
         private object CompileExpression()
@@ -154,6 +211,24 @@ namespace Compiler
             return term;
         }
 
+        private object ParseLowerThan(Token token)
+        {
+            object id;
+            if (token.Type == TokenType.Identifier)
+            {
+                id = token.Value;
+                if (IsNextTokenLowerThanSign())
+                {
+                    token = GetNext();
+                    object term = ParseTerm();
+                    term = new[] {"$lowerThan", id, term};
+                    return term;
+                }
+
+            }
+            return 0;
+        }
+
         private bool IsNextTokenMulOp()
         {
             return
@@ -165,6 +240,13 @@ namespace Compiler
         {
             return
                 new[] { TokenType.OperatorPlus, TokenType.OperatorMinus }.Contains(
+                    PeakNext().Type);
+        }
+
+        private bool IsNextTokenLowerThanSign()
+        {
+            return
+                new[] { TokenType.LowerThan }.Contains(
                     PeakNext().Type);
         }
     }
