@@ -46,8 +46,6 @@ namespace DP_Tokenizer
         {
             _head = new Node<T>(item);
             _tail = _head;
-            _head.Next = _tail;
-            _head.Previous = _tail;
         }
 
         public void AddAfter(T existingData, T newData)
@@ -62,15 +60,14 @@ namespace DP_Tokenizer
         {
             if (node == null)
                 throw new ArgumentNullException("node");
-            Node<T> temp = findNode(_head, node.Data);
-            if (temp != node)
-                throw new InvalidOperationException("node doesn't exist in the list");
 
             Node<T> newNode = new Node<T>(newData);
             newNode.Next = node.Next;
-            node.Next.Previous = newNode;
             newNode.Previous = node;
             node.Next = newNode;
+
+            if (node != _tail)
+                node.Next.Previous = newNode;
 
             // if the node adding is tail node, then repointing tail node
             if (node == _tail)
@@ -91,15 +88,13 @@ namespace DP_Tokenizer
             if (node == null)
                 throw new ArgumentNullException("Node");
 
-            Node<T> temp = findNode(_head, node.Data);
-            if (temp != node)
-                throw new InvalidOperationException("Node doesn't exist in the list");
-
             Node<T> newNode     = new Node<T>(newData);
-            node.Previous.Next  = newNode;
             newNode.Previous    = node.Previous;
             newNode.Next        = node;
             node.Previous       = newNode;
+
+            if (node != _head)
+                node.Previous.Next = newNode;
 
             if (node == _head)
                 _head = newNode;
@@ -114,9 +109,7 @@ namespace DP_Tokenizer
             {
                 Node<T> newNode     = new Node<T>(data);
                 _head.Previous       = newNode;
-                newNode.Previous    = _tail;
                 newNode.Next        = _head;
-                _tail.Next           = newNode;
                 _head                = newNode;
             }
 
@@ -133,10 +126,8 @@ namespace DP_Tokenizer
             {
                 Node<T> newNode  = new Node<T>(data);
                 _tail.Next        = newNode;
-                newNode.Next     = _head;
                 newNode.Previous = _tail;
                 _tail             = newNode;
-                _head.Previous    = _tail;
             }
         
             _size++;
@@ -153,23 +144,8 @@ namespace DP_Tokenizer
             Node<T> result = null;
             if (Object.Equals(node.Data, valueToCompare))
                 result = node;
-            else if (node.Next != _head)
+            else if (node.Next != null)
                 result = findNode(node.Next, valueToCompare);
-            return result;
-        }
-
-        public Node<T> GetElementAt(int index)
-        {
-            if (index < 0 && index > _size)
-                return null;
-
-            int i = 0;
-            Node<T> result = _head;
-            while (i < index)
-            {
-                result = result.Next;
-                i++;
-            }
             return result;
         }
 
@@ -182,7 +158,7 @@ namespace DP_Tokenizer
                 {
                     yield return current.Data;
                     current = current.Next;
-                } while (current != _head);
+                } while (current != null);
             }
         }
 

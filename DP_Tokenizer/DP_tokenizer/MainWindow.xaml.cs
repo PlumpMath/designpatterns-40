@@ -29,8 +29,8 @@ namespace DP_Tokenizer
             List<TokenDefinition> definitions   = Grammar.GetDefinitions();
             List<TokenPartner> partners         = Grammar.GetPartners();
 
-            //String documents = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "test.txt");
-            String documents = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "test.txt");
+            String documents = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "test.txt");
+            //String documents = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "test.txt");
             TextReader reader = new StreamReader(documents);
 
             Tokenizer tokenizer = new Tokenizer(reader, definitions, partners);

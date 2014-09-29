@@ -62,6 +62,7 @@
     <Compile Include="TokenDefinition.cs" />
     <Compile Include="TokenList.cs" />
     <Compile Include="TokenPartner.cs" />
+    <Compile Include="TokenTest.cs" />
     <Compile Include="TokenType.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -105,7 +106,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Res\test.txt" />
+    <None Include="Res\test.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

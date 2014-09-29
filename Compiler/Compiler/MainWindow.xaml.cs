@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using DP_Tokenizer;
+using Path = System.IO.Path;
 
 namespace Compiler
 {
@@ -22,7 +25,10 @@ namespace Compiler
     {
         public MainWindow()
         {
-            InitializeComponent();
+            var tokens = TokenTest.GetTestTokens();
+            var compiler = new CCompiler(tokens);
+            compiler.Compile();
+
         }
     }
 }

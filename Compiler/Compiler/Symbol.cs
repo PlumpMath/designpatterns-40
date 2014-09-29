@@ -11,8 +11,8 @@ namespace Compiler
     {
         public string Name { get; set; }
         public TokenType Type { get; set; }
-        public SymbolKind Kind { get; set; }
         public int Index { get; set; }
+        public int Value { get; set; }
     }
 
     public enum SymbolKind
