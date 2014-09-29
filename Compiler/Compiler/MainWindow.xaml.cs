@@ -29,6 +29,8 @@ namespace Compiler
             var compiler = new CCompiler(tokens);
             compiler.Compile();
 
+            var compTokens = compiler.GetCompilerTokens();
+            var ding = true;
         }
     }
 }

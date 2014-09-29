@@ -55,6 +55,7 @@
     </ApplicationDefinition>
     <Compile Include="CompileToken.cs" />
     <Compile Include="Generator\ICodeGenerator.cs" />
+    <Compile Include="LabelStack.cs" />
     <Compile Include="Symbol.cs" />
     <Compile Include="SymbolTable.cs" />
     <Page Include="MainWindow.xaml">

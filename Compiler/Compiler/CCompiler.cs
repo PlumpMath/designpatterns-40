@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Windows.Documents;
 using DP_Tokenizer;
 
 namespace Compiler
@@ -14,10 +11,22 @@ namespace Compiler
 
         private readonly TokenList<object[]> _compileCommands;
 
+        // Label stacks
+        private LabelStack _endIfLabels;
+        private LabelStack _elseLabels;
+        private LabelStack _beginWhileLabels;
+        private LabelStack _endWhileLabels;
+
         public CCompiler(TokenList<Token> tokenList)
         {
             _tokenList = tokenList;
             _compileCommands = new TokenList<object[]>();
+            
+            // Label stacks
+            _endIfLabels = new LabelStack("ENDIF_");
+            _elseLabels = new LabelStack("ELSE_");
+            _beginWhileLabels = new LabelStack("BEGINWHILE_");
+            _endWhileLabels = new LabelStack("ENDWHILE_");
         }
 
         private Token GetNext()
@@ -32,20 +41,15 @@ namespace Compiler
 
         public void Compile()
         {
-            Token token;
             while (PeakNext() != null)
             {
-                token = PeakNext();
-                switch (token.Type)
-                {
-                    case TokenType.Identifier: ParseAssignStatement();
-                        break;
-                    case TokenType.If: ParseIfStatement();
-                        break;
-                    case TokenType.While: CompileWhileStatement();
-                        break;
-                } 
+                ParseStatement();
             }
+        }
+
+        public TokenList<object[]> GetCompilerTokens()
+        {
+            return _compileCommands;
         }
 
         private void Match(TokenType token)
@@ -60,17 +64,22 @@ namespace Compiler
             }
         }
 
-        private object ParseStatement()
+        private void ParseStatement()
         {
             switch (PeakNext().Type)
             {
-                case TokenType.If: ParseIfStatement();
+                case TokenType.If: 
+                    ParseIfStatement();
                     break;
                 case TokenType.Identifier:
                     ParseAssignStatement();
                     break;
+                case TokenType.While:
+                    ParseWhileStatement();
+                    break;
+                default:
+                    throw new Exception("Expected statement identifier");
             }
-            return null;
         }
 
         private void ParseIfStatement()
@@ -93,6 +102,8 @@ namespace Compiler
 
             Match(TokenType.CloseParenthesis);
 
+            _compileCommands.AddLast(new [] {"$if", condition, new[] {"$goto", _endIfLabels.Push()} });
+
             bool hasBrackets = false;
             if (PeakNext().Type == TokenType.OpenCurlyBracket)
             {
@@ -100,12 +111,12 @@ namespace Compiler
                 hasBrackets = true;
             }
 
-            object statements = ParseStatement();
+            ParseStatement();
 
             if (hasBrackets)
-                Match(TokenType.CloseParenthesis);
+                Match(TokenType.CloseCurlyBracket);
 
-            _compileCommands.AddLast(new [] {"$if", condition, statements});
+            _compileCommands.AddLast(new[] { _endIfLabels.Pop() });
         }
 
         private void ParseIfElse()
@@ -123,10 +134,12 @@ namespace Compiler
                 hasBrackets = true;
             }
 
-            object statements = ParseStatement();
+            ParseStatement();
 
             if (hasBrackets)
                 Match(TokenType.CloseParenthesis);
+
+            _compileCommands.AddLast(new[] { "$ifElse", condition, new[] {"$goto", _elseLabels.Push()} });
 
             Match(TokenType.Else);
             bool elseHasBrackets = false;
@@ -136,42 +149,42 @@ namespace Compiler
                 elseHasBrackets = true;
             }
 
-            object elseStatements = ParseStatement();
+            ParseStatement();
 
             if (elseHasBrackets)
-                Match(TokenType.CloseParenthesis);
+                Match(TokenType.CloseCurlyBracket);
 
-            _compileCommands.AddLast(new [] {"$ifElse", condition, statements, elseStatements});
+            _compileCommands.AddLast(new []{ _elseLabels.Pop() });
         }
 
-        private void CompileWhileStatement()
-        {
-            var token = GetNext();
 
-            if (token.Type == TokenType.While)
+        private void ParseWhileStatement()
+        {
+            Match(TokenType.While);
+            Match(TokenType.OpenParenthesis);
+
+            _compileCommands.AddLast(new [] {_beginWhileLabels.Push()} );
+
+            object condition = ParseExpression();
+
+            Match(TokenType.CloseParenthesis);
+
+            _compileCommands.AddLast(new [] {"$while", condition, new []{"$goto", _endWhileLabels.Push()} });
+
+            bool hasBrackets = false;
+            if (PeakNext().Type == TokenType.OpenCurlyBracket)
             {
-                token = GetNext();
-                // After while find open bracket
-                if (token.Type == TokenType.OpenParenthesis)
-                {
-                    token = GetNext();
-                    // after open bracket find ID to compile the condition
-                    if (token.Type == TokenType.Identifier)
-                    {
-                        // Compile specific condition
-                        object compileCondition = ParseExpression();
-                        token = GetNext();
-                        if (token.Type == TokenType.CloseParenthesis)
-                        {
-                            token = GetNext();
-                            if (token.Type == TokenType.OpenCurlyBracket)
-                            {
-                                object compileStatement = ParseStatement();
-                            }
-                        }
-                    }
-                }
+                GetNext();
+                hasBrackets = true;
             }
+
+            ParseStatement();
+
+            if (hasBrackets)
+                Match(TokenType.CloseCurlyBracket);
+
+            _compileCommands.AddLast(new[] { "$goto", _beginWhileLabels.Pop() });
+            _compileCommands.AddLast(new[] { _endWhileLabels.Pop() });
         }
 
         private void ParseAssignStatement()
@@ -191,17 +204,13 @@ namespace Compiler
             else
                 throw new Exception("Missing identifier");
 
-            token = GetNext();
-            if (token.Type != TokenType.Equals)
-                throw new Exception("Missing '='");
+            Match(TokenType.Equals);
 
             object compileExpression = ParseExpression();
 
             _compileCommands.AddLast(new []{ "$assignment", lValue.Name, compileExpression });
 
-            token = GetNext();
-            if (token.Type != TokenType.EOL)
-                throw new Exception("Expected ';'");
+            Match(TokenType.EOL);
         }
 
         private object ParseTerm()
