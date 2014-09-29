@@ -43,7 +43,8 @@ namespace DP_Tokenizer
             definitions.Add(new TokenDefinition("=", TokenType.Equals)); // equals
             definitions.Add(new TokenDefinition("<=", TokenType.LowerOrEqThan));
             definitions.Add(new TokenDefinition(">=", TokenType.GreaterOrEqThan));
-            definitions.Add(new TokenDefinition("\\|\\||&&|==|!=", TokenType.Comparator));
+            definitions.Add(new TokenDefinition("==|!=", TokenType.Comparator));
+            definitions.Add(new TokenDefinition("\\|\\||&&", TokenType.Comparator));
             definitions.Add(new TokenDefinition("\\;", TokenType.EOL)); // end line
 
             definitions.Add(new TokenDefinition("[a-zA-Z][a-zA-Z0-9_]*", TokenType.Identifier)); // variable

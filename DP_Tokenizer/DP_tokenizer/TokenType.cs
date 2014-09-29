@@ -35,12 +35,14 @@ namespace DP_Tokenizer
         GreaterOrEqThan,
         LowerOrEqThan,
         Equals,
+        NotEqual,
         OpenParenthesis,
         CloseParenthesis,
         OpenCurlyBracket,
         CloseCurlyBracket,
         OpenBracket,
         CloseBracket,
-        Comparator
+        Comparator,
+        Logical
     }
 }

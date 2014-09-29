@@ -71,20 +71,13 @@ namespace Compiler
             if (token.Type != TokenType.Equals)
                 throw new Exception("Missing '='");
 
-            object compileExpression = CompileExpression();
+            object compileExpression = ParseExpression();
 
             _compileCommands.AddLast(new []{ "$assignment", lValue.Name, compileExpression });
 
             token = GetNext();
             if (token.Type != TokenType.EOL)
                 throw new Exception("Expected ';'");
-        }
-
-        private object CompileExpression()
-        {
-            // Room to add other expressions, not needed now
-
-            return ParseAddExpression();
         }
 
         private object ParseTerm()
@@ -107,6 +100,57 @@ namespace Compiler
             }
 
             return null;
+        }
+
+        private object ParseExpression()
+        {
+            object parsedExpr = ParseRelationalExpression();
+            while (IsNextTokenLogicalOp())
+            {
+                Token logicalOp = GetNext();
+                object secondParsedExpr = ParseRelationalExpression();
+                switch (logicalOp.Value)
+                {
+                    case "&&":
+                        parsedExpr = new[] {"$and", parsedExpr, secondParsedExpr};
+                        break;
+                    case "||": 
+                        parsedExpr = new[] {"$or", parsedExpr, secondParsedExpr};
+                        break;
+                }
+            }
+            return parsedExpr;
+        }
+
+        private object ParseRelationalExpression()
+        {
+            object parsedExpr = ParseAddExpression();
+            while (IsNextTokenRelationalOp())
+            {
+                Token relOp = GetNext();
+                object secondParsedExpr = ParseAddExpression();
+
+                switch (relOp.Type)
+                {
+                    case TokenType.LowerThan:
+                        parsedExpr = new[] {"$less", parsedExpr, secondParsedExpr};
+                        break;
+                    case TokenType.LowerOrEqThan:
+                        parsedExpr = new[] {"$lessOrEq", parsedExpr, secondParsedExpr};
+                        break;
+                    case TokenType.GreaterThan:
+                        parsedExpr = new[] { "$greater", parsedExpr, secondParsedExpr };
+                        break;
+                    case TokenType.GreaterOrEqThan:
+                        parsedExpr = new[] { "$greaterOrEq", parsedExpr, secondParsedExpr };
+                        break;
+                    case TokenType.Comparator:
+                        parsedExpr = relOp.Value == "==" ? new[] { "$equals", parsedExpr, secondParsedExpr } : new[] { "$notEquals", parsedExpr, secondParsedExpr };
+                        break;
+                }
+            }
+
+            return parsedExpr;
         }
 
         private object ParseAddExpression()
@@ -166,6 +210,21 @@ namespace Compiler
             return
                 new[] { TokenType.OperatorPlus, TokenType.OperatorMinus }.Contains(
                     PeakNext().Type);
+        }
+
+        private bool IsNextTokenRelationalOp()
+        {
+            return
+                new[]
+                {
+                    TokenType.Comparator, TokenType.GreaterOrEqThan, TokenType.GreaterThan, TokenType.LowerOrEqThan,
+                    TokenType.LowerThan
+                }.Contains(PeakNext().Type);
+        }
+
+        private bool IsNextTokenLogicalOp()
+        {
+            return new[] {TokenType.Logical}.Contains(PeakNext().Type);
         }
     }
 }
