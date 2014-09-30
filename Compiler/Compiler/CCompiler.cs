@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using DP_Tokenizer;
 
 namespace Compiler
 {
-    class CCompiler
+    public class CCompiler
     {
         private readonly TokenList<Token> _tokenList;
         private TokenList<Token>.Node<Token> _currentToken;
 
         private readonly TokenList<object[]> _compileCommands;
+        private readonly SymbolTable _symbolTable;
 
         // Label stacks
         private LabelStack _endIfLabels;
@@ -21,6 +23,7 @@ namespace Compiler
         {
             _tokenList = tokenList;
             _compileCommands = new TokenList<object[]>();
+            _symbolTable = new SymbolTable();
             
             // Label stacks
             _endIfLabels = new LabelStack("ENDIF_");
@@ -39,6 +42,13 @@ namespace Compiler
             return _currentToken == null ? _tokenList.Head.Data : (_currentToken.Next != null ? _currentToken.Next.Data : null);
         }
 
+        private Token PeekNextTwo()
+        {
+            return _currentToken == null
+                ? ((_tokenList.Head.Next != null) ? _tokenList.Head.Next.Data : null)
+                : (_currentToken.Next.Next != null ? _currentToken.Next.Next.Data : null);
+        }
+
         public void Compile()
         {
             while (PeekNext() != null)
@@ -50,6 +60,11 @@ namespace Compiler
         public TokenList<object[]> GetCompilerTokens()
         {
             return _compileCommands;
+        }
+
+        public SymbolTable GetSymbolTable()
+        {
+            return _symbolTable;
         }
 
         private void Match(TokenType token)
@@ -191,7 +206,6 @@ namespace Compiler
 
             // Add for if the if was true, goto the end of the if. The last pushed token. Continue code from there
             _compileCommands.AddBefore(elseGoto, new object[] {"$goto", _compileCommands.Tail});
-            _endIfLabels.Pop();
 
             _compileCommands.AddBefore(insertIfBefore, new[] { "$ifElse", condition, new object[] { "$goto", elseGoto} });
         }
@@ -232,16 +246,23 @@ namespace Compiler
 
         private void ParseAssignStatement()
         {
+            if (IsSecondTokenUniOp())
+            {
+                object[] uniParse = (object[])ParseExpression();
+                _compileCommands.AddLast(uniParse);
+                return;
+            }
+
             var token = GetNext(); // type or variable-name
 
             Symbol lValue;
             if (token.Type == TokenType.Identifier)
             {
-                lValue = SymbolTable.GetSymbol(token.Value);
+                lValue = _symbolTable.GetSymbol(token.Value);
                 if (lValue == null)
                 {
-                    SymbolTable.Define(token.Value, TokenType.Integer);
-                    lValue = SymbolTable.GetSymbol(token.Value);
+                    _symbolTable.Define(token.Value, TokenType.Integer);
+                    lValue = _symbolTable.GetSymbol(token.Value);
                 }
             }
             else
@@ -265,14 +286,27 @@ namespace Compiler
                 int value = Int32.Parse(token.Value);
                 return value;
             }
+            else if (token.Type == TokenType.String)
+            {
+                string value = token.Value;
+                value = Regex.Replace(value, "^\"", "");
+                value = Regex.Replace(value, "\"$", "");
+                return value;
+            }
             else if (token.Type == TokenType.Identifier)
             {
                 string varName = token.Value;
-                var variable = SymbolTable.GetSymbol(varName);
+                var variable = _symbolTable.GetSymbol(varName);
                 if (variable == null)
                     throw new Exception("Unkown identifier: " + varName);
 
-                return new[] {"$getVariable", varName};
+                return new object[] {"$getVariable", varName};
+            }
+            else if (token.Type == TokenType.OpenParenthesis)
+            {
+                object expr = ParseExpression();
+                Match(TokenType.CloseParenthesis);
+                return expr;
             }
 
             return null;
@@ -352,25 +386,44 @@ namespace Compiler
 
         private object ParseMulExpression()
         {
-            object term = ParseTerm();
-
+            object term = ParseUniExpression();
             while (IsNextTokenMulOp())
             {
                 Token mullOp = GetNext();
+                object secondTerm = ParseUniExpression();
                 switch (mullOp.Type)
                 {
                     case TokenType.OperatorMultiply:
-                        term = new[] { "$mul", term, ParseTerm() };
+                        term = new[] { "$mul", term, secondTerm };
                         break;
                     case TokenType.OperatorDivide:
-                        term = new[] { "$div", term, ParseTerm() };
+                        term = new[] { "$div", term, secondTerm };
                         break;
                     case TokenType.OperatorRaised:
-                        term = new[] { "$raise", term, ParseTerm() };
+                        term = new[] { "$raise", term, secondTerm };
                         break;
                 }
             }
 
+            return term;
+        }
+
+        private object ParseUniExpression()
+        {
+            object term = ParseTerm();
+            while (IsNextTokenUniOp())
+            {
+                Token mullOp = GetNext();
+                switch (mullOp.Type)
+                {
+                    case TokenType.UniOperatorPlus:
+                        term = new[] { "$uniPlus", term}; Match(TokenType.EOL);
+                        break;
+                    case TokenType.UniOperatorMinus:
+                        term = new[] { "$uniMin", term}; Match(TokenType.EOL);
+                        break;
+                }
+            }
             return term;
         }
 
@@ -402,6 +455,16 @@ namespace Compiler
         private bool IsNextTokenLogicalOp()
         {
             return new[] {TokenType.Logical}.Contains(PeekNext().Type);
+        }
+
+        private bool IsNextTokenUniOp()
+        {
+            return new[] { TokenType.UniOperatorPlus, TokenType.UniOperatorMinus }.Contains(PeekNext().Type);
+        }
+
+        private bool IsSecondTokenUniOp()
+        {
+            return new[] { TokenType.UniOperatorPlus, TokenType.UniOperatorMinus }.Contains(PeekNextTwo().Type);
         }
     }
 }

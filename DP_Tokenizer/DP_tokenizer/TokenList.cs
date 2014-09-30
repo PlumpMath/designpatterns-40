@@ -89,12 +89,11 @@ namespace DP_Tokenizer
                 throw new ArgumentNullException("Node");
 
             Node<T> newNode     = new Node<T>(newData);
+            if (node != _head)
+                node.Previous.Next = newNode;
             newNode.Previous    = node.Previous;
             newNode.Next        = node;
             node.Previous       = newNode;
-
-            if (node != _head)
-                node.Previous.Next = newNode;
 
             if (node == _head)
                 _head = newNode;

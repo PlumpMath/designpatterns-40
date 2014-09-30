@@ -12,7 +12,7 @@ namespace Compiler
         public string Name { get; set; }
         public TokenType Type { get; set; }
         public int Index { get; set; }
-        public int Value { get; set; }
+        public dynamic Value { get; set; }
     }
 
     public enum SymbolKind

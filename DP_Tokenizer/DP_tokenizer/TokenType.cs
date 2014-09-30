@@ -44,6 +44,7 @@ namespace DP_Tokenizer
         CloseBracket,
         Comparator,
         Logical,
-        Show
+        Show,
+        String
     }
 }

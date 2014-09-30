@@ -19,10 +19,10 @@ namespace DP_Tokenizer
                 new TokenDefinition("for", TokenType.ForLoop),
                 new TokenDefinition("show", TokenType.Show),
                 new TokenDefinition("(sin|cos|exp|ln|sqrt)\b", TokenType.Function),
-                new TokenDefinition("\\+(?!\\+)", TokenType.OperatorPlus),
-                new TokenDefinition("-(?!-)", TokenType.OperatorMinus),
                 new TokenDefinition("\\+{2}", TokenType.UniOperatorPlus),
                 new TokenDefinition("-{2}", TokenType.UniOperatorMinus),
+                new TokenDefinition("\\+(?!\\+)", TokenType.OperatorPlus),
+                new TokenDefinition("-(?!-)", TokenType.OperatorMinus),
                 new TokenDefinition("\\*", TokenType.OperatorMultiply),
                 new TokenDefinition("\\^", TokenType.OperatorRaised),
                 new TokenDefinition("\\/", TokenType.OperatorDivide),
@@ -41,8 +41,9 @@ namespace DP_Tokenizer
                 new TokenDefinition("=", TokenType.Equals),
                 new TokenDefinition("<=", TokenType.LowerOrEqThan),
                 new TokenDefinition(">=", TokenType.GreaterOrEqThan),
-                new TokenDefinition("\\|\\||&&", TokenType.Comparator),
+                new TokenDefinition("\\|\\||&&", TokenType.Logical),
                 new TokenDefinition("\\;", TokenType.EOL),
+                new TokenDefinition("\".+\"", TokenType.String),
                 new TokenDefinition("[a-zA-Z][a-zA-Z0-9_]*", TokenType.Identifier)
             };
 
