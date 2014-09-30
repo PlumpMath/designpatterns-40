@@ -118,7 +118,8 @@ namespace Compiler
 
             Match(TokenType.CloseParenthesis);
 
-            _compileCommands.AddLast(new [] {"$if", condition, new[] {"$goto", _endIfLabels.Push()} });
+            _compileCommands.AddLast(new[] { "Do Nothing" });
+            var insertIfBefore = _compileCommands.Tail;
 
             bool hasBrackets = false;
             if (PeekNext().Type == TokenType.OpenCurlyBracket)
@@ -135,7 +136,8 @@ namespace Compiler
             if (hasBrackets)
                 Match(TokenType.CloseCurlyBracket);
 
-            _compileCommands.AddLast(new[] { _endIfLabels.Pop() });
+            _compileCommands.AddLast(new[] { "Do Nothing" });
+            _compileCommands.AddBefore(insertIfBefore, new[] { "$if", condition, new object[] { "$goto", _compileCommands.Tail } });
         }
 
         private void ParseIfElse()
@@ -146,7 +148,9 @@ namespace Compiler
 
             Match(TokenType.CloseParenthesis);
 
-            _compileCommands.AddLast(new[] { "$ifElse", condition, new[] { "$goto", _elseLabels.Push() } });
+
+            _compileCommands.AddLast(new[] { "Do Nothing" });
+            var insertIfBefore = _compileCommands.Tail;
 
             bool hasBrackets = false;
             if (PeekNext().Type == TokenType.OpenCurlyBracket)
@@ -165,8 +169,8 @@ namespace Compiler
 
             Match(TokenType.Else);
 
-            _compileCommands.AddLast(new [] {"$goto", _endIfLabels.Push()});
-            _compileCommands.AddLast(new[] { _elseLabels.Pop() });
+            _compileCommands.AddLast(new[] { "Do Nothing" });
+            var elseGoto = _compileCommands.Tail;
 
             bool elseHasBrackets = false;
             if (PeekNext().Type == TokenType.OpenCurlyBracket)
@@ -175,12 +179,21 @@ namespace Compiler
                 elseHasBrackets = true;
             }
 
-            ParseStatement();
+            do
+            {
+                ParseStatement();
+            } while (elseHasBrackets && PeekNext().Type != TokenType.CloseCurlyBracket);
 
             if (elseHasBrackets)
                 Match(TokenType.CloseCurlyBracket);
 
-            _compileCommands.AddLast(new [] {_endIfLabels.Pop()});
+            _compileCommands.AddLast(new[] { "Do Nothing" });
+
+            // Add for if the if was true, goto the end of the if. The last pushed token. Continue code from there
+            _compileCommands.AddBefore(elseGoto, new object[] {"$goto", _compileCommands.Tail});
+            _endIfLabels.Pop();
+
+            _compileCommands.AddBefore(insertIfBefore, new[] { "$ifElse", condition, new object[] { "$goto", elseGoto} });
         }
 
 
@@ -189,14 +202,13 @@ namespace Compiler
             Match(TokenType.While);
             Match(TokenType.OpenParenthesis);
 
-            _compileCommands.AddLast(new [] {_beginWhileLabels.Push()} );
+            _compileCommands.AddLast(new [] {"Do Nothing"} );
+            var insertWhileAfter = _compileCommands.Tail;
 
             object condition = ParseExpression();
 
             Match(TokenType.CloseParenthesis);
-
-            _compileCommands.AddLast(new [] {"$while", condition, new []{"$goto", _endWhileLabels.Push()} });
-
+            
             bool hasBrackets = false;
             if (PeekNext().Type == TokenType.OpenCurlyBracket)
             {
@@ -212,8 +224,10 @@ namespace Compiler
             if (hasBrackets)
                 Match(TokenType.CloseCurlyBracket);
 
-            _compileCommands.AddLast(new[] { "$goto", _beginWhileLabels.Pop() });
-            _compileCommands.AddLast(new[] { _endWhileLabels.Pop() });
+            _compileCommands.AddLast(new object[] { "$goto", insertWhileAfter });
+            _compileCommands.AddLast(new[] { "Do Nothing" });
+
+            _compileCommands.AddAfter(insertWhileAfter, new[] { "$while", condition, new object[] { "$goto", _compileCommands.Tail } });
         }
 
         private void ParseAssignStatement()
