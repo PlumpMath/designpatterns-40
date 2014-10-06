@@ -31,5 +31,12 @@ namespace kipschieten.View
             LeftPosition += _xStep;
             TopPosition += _yStep;
         }
+
+        public void SetIsShot(KeyValuePair<double, double> coords)
+        {
+            if (coords.Key >= LeftPosition && coords.Key <= LeftPosition + 50 &&
+                coords.Value >= TopPosition && coords.Value <= TopPosition + 50)
+                _isShot = true;
+        }
     }
 }

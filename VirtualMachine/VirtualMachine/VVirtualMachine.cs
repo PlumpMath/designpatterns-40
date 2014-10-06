@@ -223,7 +223,9 @@ namespace VirtualMachine
             dynamic castCondition1 = condition1;
             dynamic castCondition2 = condition2;
 
-            return castCondition1 || castCondition2;
+            if (castCondition1)
+                return true;
+            return !castCondition1 && castCondition2;
         }
 
         public bool runLess(object condition1, object condition2)
