@@ -15,13 +15,6 @@ namespace kipschieten.View
             CanBeShot = true;
             CanMove   = true;
 
-            Random random = new Random();
-
-            while (_xStep == 0)
-                _xStep = random.Next(-4, 4);
-            while (_yStep == 0)
-                _yStep = random.Next(-4, 4);
-
             setLocation(xPos, yPos);
         }
     }

@@ -53,6 +53,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Levels\Level.cs" />
+    <Compile Include="Levels\LevelOne.cs" />
+    <Compile Include="Levels\LevelThree.cs" />
+    <Compile Include="Levels\LevelTwo.cs" />
+    <Compile Include="Model\LevelEnum.cs" />
+    <Compile Include="Model\LevelFactory.cs" />
     <Compile Include="Model\UnitEnum.cs" />
     <Compile Include="Model\UnitFactory.cs" />
     <Compile Include="View\Cow.cs" />

@@ -12,26 +12,40 @@ namespace kipschieten.View
 {
     class GameCanvas : Canvas
     {
+        public void DrawMovingUnits(List<MovingUnit> movingUnits)
+        {
+            Children.Clear();
+            foreach (var movingUnit in movingUnits)
+            {
+                drawUnit(movingUnit);
+            }
+        }
 
         public void DrawUnits(List<Unit> units)
         {
-            // remove previous units
-            Children.Clear();
-
-            foreach (Unit unit in units)
+            foreach (var unit in units)
             {
-                ImageBrush unitBrush = new ImageBrush(new BitmapImage(new Uri(unit.UnitImage)));
-                unitBrush.Freeze();
-
-                Rectangle unitRectangle = new Rectangle();
-                unitRectangle.Height = unit.Height;
-                unitRectangle.Width = unit.Width;
-                unitRectangle.SetValue(Canvas.LeftProperty, unit.LeftPosition);
-                unitRectangle.SetValue(Canvas.TopProperty, unit.TopPosition);
-                unitRectangle.Fill = unitBrush;
-
-                Children.Add(unitRectangle);
+                drawUnit(unit);
             }
+        }
+
+        private void drawUnit(Unit unit)
+        {
+            var unitBrush = new ImageBrush(new BitmapImage(new Uri(unit.UnitImage)));
+            unitBrush.Freeze();
+
+            var unitRectangle = new Rectangle
+            {
+                Height = unit.Height, 
+                Width = unit.Width,
+                Stroke = Brushes.Blue,
+                StrokeThickness = 1
+            };
+            unitRectangle.SetValue(LeftProperty, unit.LeftPosition);
+            unitRectangle.SetValue(TopProperty, unit.TopPosition);
+            unitRectangle.Fill = unitBrush;
+
+            Children.Add(unitRectangle);
         }
     }
 }

@@ -74,7 +74,7 @@ namespace kipschieten.View
 
         public void GameOver()
         {
-            MessageBox.Show("You shot 3 animals, you win!");
+            MessageBox.Show("You played all levels, you win!");
             Environment.Exit(0);
         }
     }

@@ -1,4 +1,5 @@
-﻿using kipschieten.View;
+﻿using kipschieten.Levels;
+using kipschieten.View;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace kipschieten.Model
 {
     class Manager
     {
-        private const int max_chickens = 10;
+        private const int MaxChickens = 10;
         private readonly Random _random = new Random();
 
         // Grid bounds
@@ -22,51 +23,60 @@ namespace kipschieten.Model
         private readonly MouseCapture _mouseCapture;
 
         private Player _player;
-        public List<Unit> _units;
+        private List<MovingUnit> _movingUnits;
+        private List<Unit> _nonMovingUnits; 
         private readonly GameCanvas _playGrid;
         
         public bool GameOver = false;
+        private LevelEnum _currentLevelEnum;
+        private Level _currentLevel;
+        private int _unitsHit;
 
         public Manager(GameCanvas playGrid)
         {
             _playGrid       = playGrid;
             _mouseCapture   = new MouseCapture(_playGrid);
 
-            _xMaxBounds = (int)_playGrid.ActualWidth - 10;
+            _xMaxBounds = (int)_playGrid.ActualWidth - 60;
             _xMinBounds = 10;
 
-            _yMaxBounds = (int)_playGrid.ActualHeight - 10;
+            _yMaxBounds = (int)_playGrid.ActualHeight - 60;
             _yMinBounds = 10;
 
+            _currentLevelEnum = LevelEnum.LevelOne;
+            _currentLevel = LevelFactory.CreateLevel(_currentLevelEnum);
+
             initialize();
+            initLevel();
         }
 
         private void initialize()
         {
-            _player     = new Player();
-            _units      = new List<Unit>();
+            _player = new Player();
+        }
 
-            // random amount chickens
-            int startAmountUnits = _random.Next(4);
-            for (int x = 0; x < startAmountUnits; x++)
+        private void nextLevel()
+        {
+            _currentLevelEnum++;
+            if (_currentLevelEnum == LevelEnum.GameOver)
             {
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    // set location
-                    // random based on x and y bounds
-                    var xPos = (double)_random.Next(_xMinBounds, _xMaxBounds);
-                    var yPos = (double)_random.Next(_yMinBounds, _yMaxBounds);
-
-                    // Set random unit on screen
-                    var unitType = (UnitEnum)_random.Next(1, 3);
-                    Unit unit = UnitFactory.CreateUnit(unitType, xPos, yPos);
-                    _units.Add(unit);
-                });
+                GameOver = true;
+                return;
             }
 
+            _currentLevel = LevelFactory.CreateLevel(_currentLevelEnum);
+            initLevel();
+        }
+
+        private void initLevel()
+        {
+            _unitsHit = 0;
+            _nonMovingUnits = new List<Unit>();
+            _movingUnits = new List<MovingUnit>();
+
             // set trees
-            int startAmountTrees = 5;
-            for(int t = 0; t < startAmountTrees; t++) {
+            for (int t = 0; t < _currentLevel.NonMovingUnitAmount; t++)
+            {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     // set location
@@ -76,7 +86,38 @@ namespace kipschieten.Model
 
                     // Set random unit on screen
                     Unit unit = UnitFactory.CreateUnit(UnitEnum.Tree, xPos, yPos);
-                    _units.Add(unit);
+                    _nonMovingUnits.Add(unit);
+                });
+            }
+
+            // random amount MovingUnits
+            int startAmountUnits = _random.Next(5);
+            for (int x = 0; x < startAmountUnits; x++)
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    MovingUnit unit = null;
+                    bool collides = true;
+                    while (collides)
+                    {
+                        // set location
+                        var xPos = _random.Next(_xMinBounds, _xMaxBounds);
+                        var yPos = _random.Next(_yMinBounds, _yMaxBounds);
+
+                        var unitType = (UnitEnum)_random.Next(1, 3);
+                        unit = (MovingUnit)UnitFactory.CreateUnit(unitType, xPos, yPos);
+
+                        if (
+                            !_nonMovingUnits.Any(
+                                unit1 =>
+                                    xPos >= unit1.LeftPosition && xPos <= (unit1.LeftPosition + 50) &&
+                                    yPos >= unit1.TopPosition &&
+                                    yPos <= (unit1.TopPosition + 50)))
+                            collides = false;
+                    }
+
+                    unit.SetSteps(_currentLevel.MinSpeed, _currentLevel.MaxSpeed);
+                    _movingUnits.Add(unit);
                 });
             }
         }
@@ -86,105 +127,93 @@ namespace kipschieten.Model
             updateUnits();
             updatePlayer();
             updateRender();
+            
+            if (_unitsHit == _currentLevel.UnitsToHit)
+                nextLevel();
         }
 
         private void updateUnits()
         {
             Dictionary<double, double> clickedLocations = _mouseCapture.getClicks();
 
-            for (int i = _units.Count-1; i >= 0; i--)
+            foreach (MovingUnit unit in _movingUnits)
             {
-                foreach (KeyValuePair<double, double> coords in clickedLocations.Where(coords => _units[i] is MovingUnit))
+                foreach (KeyValuePair<double, double> coords in clickedLocations)
                 {
-                    ((MovingUnit) _units[i]).SetIsShot(coords);
+                    unit.SetIsShot(coords);
+                }
+                unit.IsOutOfBounds(_yMaxBounds, _xMaxBounds);
+
+                bool wasCollide = false;
+                unit.MoveX();
+
+                foreach (Unit nonMovingUnit in _nonMovingUnits)
+                {
+                   wasCollide = unit.CheckCollisionX(nonMovingUnit);
                 }
 
-                if (_units[i].TopPosition >= _yMaxBounds - 40 || _units[i].TopPosition <= 0 ||
-                    _units[i].LeftPosition >= _xMaxBounds - 40 || _units[i].LeftPosition <= 0)
-                    _units.Remove(_units[i]);
-            }
+                unit.MoveY();
 
-            foreach (Unit unit in _units)
-            {
-                if (unit.CanMove)
+                if (!wasCollide)
                 {
-                    MethodInfo mInfo = unit.GetType().GetMethod("Move");
-                    mInfo.Invoke(unit, null);
-
-                    for (int i = 0; i < _units.Count - 1; i++)
+                    foreach (Unit nonMovingUnit in _nonMovingUnits)
                     {
-                        if (_units[i].GetType() == typeof(Tree))
-                        {
-
-                            //For left bounds
-                            if ((unit.LeftPosition + 50 >= _units[i].LeftPosition && unit.LeftPosition + 50 <= _units[i].LeftPosition + 50) &&
-                                (unit.TopPosition + 50 >= _units[i].TopPosition && unit.TopPosition <= _units[i].TopPosition)
-                               )
-                            {
-                                MethodInfo methodInfo = unit.GetType().GetMethod("ChangePosition");
-                                methodInfo.Invoke(unit, null);
-                            }
-
-                            if((unit.LeftPosition <= _units[i].LeftPosition + 50 && unit.LeftPosition + 50 >= _units[i].LeftPosition) && 
-                               (unit.TopPosition + 50 >= _units[i].TopPosition && unit.TopPosition <= _units[i].TopPosition)
-                              )
-                            {
-                                MethodInfo methodInfo = unit.GetType().GetMethod("ChangePosition");
-                                methodInfo.Invoke(unit, null);
-                            }
-                        }
+                        unit.CheckCollisionY(nonMovingUnit);
                     }
                 }
             }
 
+            MovingUnit newMovingUnit = null;
+            // Add MovingUnit
             int randomNum = _random.Next(35);
-            if (randomNum % 2 == 0 && _units.Count < max_chickens)
+            if (randomNum%2 == 0 && _movingUnits.Count < _currentLevel.MovingUnitAmount)
             {
-                // set location
-                double xPos, yPos;
-                xPos = (double)_random.Next(_xMinBounds, _xMaxBounds);
-                yPos = (double)_random.Next(_yMinBounds, _yMaxBounds);
-                UnitEnum unitType = (UnitEnum)_random.Next(1, 3);
-                Unit unit = UnitFactory.CreateUnit(unitType, xPos, yPos);
-                // check for spawn on a tree
-                foreach (var unit1 in _units.OfType<Tree>().Where(unit1 => xPos >= unit1.LeftPosition && xPos <= (unit1.LeftPosition + 50) && yPos >= unit1.TopPosition &&
-                                                                                          yPos <= (unit1.TopPosition + 50)))
+                bool collides = true;
+                while (collides)
                 {
-                    unit = UnitFactory.CreateUnit(unitType, xPos + 60, yPos + 60);
+                    // set location
+                    var xPos = _random.Next(_xMinBounds, _xMaxBounds);
+                    var yPos = _random.Next(_yMinBounds, _yMaxBounds);
+
+                    var unitType = (UnitEnum) _random.Next(1, 3);
+                    newMovingUnit = (MovingUnit) UnitFactory.CreateUnit(unitType, xPos, yPos);
+
+                    if (
+                        !_nonMovingUnits.Any(
+                            unit1 =>
+                                xPos >= unit1.LeftPosition && xPos <= (unit1.LeftPosition + 50) &&
+                                yPos >= unit1.TopPosition &&
+                                yPos <= (unit1.TopPosition + 50)))
+                        collides = false;
                 }
-                _units.Add(unit);
+
+                newMovingUnit.SetSteps(_currentLevel.MinSpeed, _currentLevel.MaxSpeed);
+                _movingUnits.Add(newMovingUnit);
             }
         }
 
         private void updatePlayer()
         {
-            foreach (MovingUnit unit in _units.OfType<MovingUnit>().Where(unit => unit.isShot))
+            foreach (MovingUnit unit in _movingUnits.Where(unit => unit.isShot))
             {
                 _player.addPoint();
+                _unitsHit++;
             }
-
-            if (_player.score == 3)
-                GameOver = true;
         }
 
         private void updateRender()
         {
             try
             {
-                for (int i = _units.Count - 1; i >= 0; i--)
+                for (int mUnit = _movingUnits.Count - 1; mUnit > 0; mUnit--)
                 {
-                    if (_units[i].CanBeShot && _units[i] is MovingUnit)
-                    {
-                        PropertyInfo pInfo = _units[i].GetType().GetProperty("isShot");
-                        if ((bool)pInfo.GetValue(_units[i], null))
-                        {
-                            _units.Remove(_units[i]);
-                            continue;
-                        }
-                    }
+                    var movingUnit = _movingUnits[mUnit];
+                    if (movingUnit.isShot)
+                        _movingUnits.Remove(movingUnit);
                 }
 
-                Application.Current.Dispatcher.Invoke(() => _playGrid.DrawUnits(_units));
+                Application.Current.Dispatcher.Invoke(() => _playGrid.DrawMovingUnits(_movingUnits));
+                Application.Current.Dispatcher.Invoke(() => _playGrid.DrawUnits(_nonMovingUnits));
             }
             catch (Exception e)
             {
