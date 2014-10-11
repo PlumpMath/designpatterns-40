@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using DP_Tokenizer;
+using Compiler.Node;
 
 namespace Compiler
 {
@@ -10,7 +11,7 @@ namespace Compiler
         private readonly TokenList<Token> _tokenList;
         private TokenList<Token>.Node<Token> _currentToken;
 
-        private readonly TokenList<object[]> _compileCommands;
+        private readonly TokenList<BaseNode> _compileCommands;
         private readonly SymbolTable _symbolTable;
 
         // Label stacks
@@ -22,7 +23,7 @@ namespace Compiler
         public CCompiler(TokenList<Token> tokenList)
         {
             _tokenList = tokenList;
-            _compileCommands = new TokenList<object[]>();
+            _compileCommands = new TokenList<BaseNode>();
             _symbolTable = new SymbolTable();
             
             // Label stacks
@@ -57,7 +58,7 @@ namespace Compiler
             }
         }
 
-        public TokenList<object[]> GetCompilerTokens()
+        public TokenList<BaseNode> GetCompilerTokens()
         {
             return _compileCommands;
         }
@@ -110,7 +111,7 @@ namespace Compiler
             Match(TokenType.CloseParenthesis);
             Match(TokenType.EOL);
 
-            _compileCommands.AddLast(new []{"$show", parameters});
+            _compileCommands.AddLast(new ShowNode("$show",parameters)); //new[]{"$show", parameters});
         }
 
         private void ParseIfStatement()
@@ -133,7 +134,7 @@ namespace Compiler
 
             Match(TokenType.CloseParenthesis);
 
-            _compileCommands.AddLast(new[] { "Do Nothing" });
+            _compileCommands.AddLast(new DoNothingNode("Do Nothing")); //new[] { "Do Nothing" });
             var insertIfBefore = _compileCommands.Tail;
 
             bool hasBrackets = false;
@@ -151,8 +152,8 @@ namespace Compiler
             if (hasBrackets)
                 Match(TokenType.CloseCurlyBracket);
 
-            _compileCommands.AddLast(new[] { "Do Nothing" });
-            _compileCommands.AddBefore(insertIfBefore, new[] { "$if", condition, new object[] { "$goto", _compileCommands.Tail } });
+            _compileCommands.AddLast(new DoNothingNode("Do Nothing")); //new[] { "Do Nothing" });
+            _compileCommands.AddBefore(insertIfBefore, new CompilerNode("$if", condition, new ConditionalJumpNode("$goto",_compileCommands.Tail))); //insertIfBefore, new[] { "$if", condition, new object[] { "$goto", _compileCommands.Tail } });
         }
 
         private void ParseIfElse()
@@ -164,7 +165,7 @@ namespace Compiler
             Match(TokenType.CloseParenthesis);
 
 
-            _compileCommands.AddLast(new[] { "Do Nothing" });
+            _compileCommands.AddLast(new DoNothingNode("Do Nothing")); //new[] { "Do Nothing" });
             var insertIfBefore = _compileCommands.Tail;
 
             bool hasBrackets = false;
@@ -184,7 +185,7 @@ namespace Compiler
 
             Match(TokenType.Else);
 
-            _compileCommands.AddLast(new[] { "Do Nothing" });
+            _compileCommands.AddLast(new DoNothingNode("Do Nothing")); //new[] { "Do Nothing" });
             var elseGoto = _compileCommands.Tail;
 
             bool elseHasBrackets = false;
@@ -202,12 +203,12 @@ namespace Compiler
             if (elseHasBrackets)
                 Match(TokenType.CloseCurlyBracket);
 
-            _compileCommands.AddLast(new[] { "Do Nothing" });
+            _compileCommands.AddLast(new DoNothingNode("Do Nothing")); //new[] { "Do Nothing" });
 
             // Add for if the if was true, goto the end of the if. The last pushed token. Continue code from there
-            _compileCommands.AddBefore(elseGoto, new object[] {"$goto", _compileCommands.Tail});
+            _compileCommands.AddBefore(elseGoto, new ConditionalJumpNode("$goto", _compileCommands.Tail));//elseGoto, new object[] {"$goto", _compileCommands.Tail});
 
-            _compileCommands.AddBefore(insertIfBefore, new[] { "$ifElse", condition, new object[] { "$goto", elseGoto} });
+            _compileCommands.AddBefore(insertIfBefore, new CompilerNode("$ifElse", condition, new ConditionalJumpNode("$goto",elseGoto))); //insertIfBefore, new[] { "$ifElse", condition, new object[] { "$goto", elseGoto} });
         }
 
 
@@ -216,7 +217,7 @@ namespace Compiler
             Match(TokenType.While);
             Match(TokenType.OpenParenthesis);
 
-            _compileCommands.AddLast(new [] {"Do Nothing"} );
+            _compileCommands.AddLast(new DoNothingNode("Do Nothing")); //new [] {"Do Nothing"} );
             var insertWhileAfter = _compileCommands.Tail;
 
             object condition = ParseExpression();
@@ -238,17 +239,17 @@ namespace Compiler
             if (hasBrackets)
                 Match(TokenType.CloseCurlyBracket);
 
-            _compileCommands.AddLast(new object[] { "$goto", insertWhileAfter });
-            _compileCommands.AddLast(new[] { "Do Nothing" });
+            _compileCommands.AddLast(new ConditionalJumpNode("$goto", insertWhileAfter)); //new object[] { "$goto", insertWhileAfter });
+            _compileCommands.AddLast(new DoNothingNode("Do nothing")); //new[] { "Do Nothing" });
 
-            _compileCommands.AddAfter(insertWhileAfter, new[] { "$while", condition, new object[] { "$goto", _compileCommands.Tail } });
+            _compileCommands.AddAfter(insertWhileAfter, new CompilerNode("$while",condition, new ConditionalJumpNode("$goto",_compileCommands.Tail))); //insertWhileAfter, new[] { "$while", condition, new object[] { "$goto", _compileCommands.Tail } });
         }
 
         private void ParseAssignStatement()
         {
             if (IsSecondTokenUniOp())
             {
-                object[] uniParse = (object[])ParseExpression();
+                BaseNode uniParse = (BaseNode)ParseExpression();
                 _compileCommands.AddLast(uniParse);
                 return;
             }
@@ -272,7 +273,7 @@ namespace Compiler
 
             object compileExpression = ParseExpression();
 
-            _compileCommands.AddLast(new []{ "$assignment", lValue.Name, compileExpression });
+            _compileCommands.AddLast(new CompilerNode("$assignment", lValue.Name, compileExpression)); //new []{ "$assignment", lValue.Name, compileExpression });
 
             Match(TokenType.EOL);
         }
