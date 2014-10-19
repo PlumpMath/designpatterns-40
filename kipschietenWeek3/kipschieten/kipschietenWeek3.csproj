@@ -64,6 +64,7 @@
     <Compile Include="View\Cow.cs" />
     <Compile Include="View\GameCanvas.cs" />
     <Compile Include="View\MovingUnit.cs" />
+    <Compile Include="View\Stone.cs" />
     <Compile Include="View\Unit.cs" />
     <Compile Include="View\Tree.cs" />
     <Page Include="MainWindow.xaml">
@@ -125,6 +126,11 @@
     <None Include="Resources\tree.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\stone.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -12,7 +12,7 @@ namespace kipschieten.Model
 {
     class MouseCapture
     {
-        private Dictionary<double, double> _clickedCoordinates;
+        private static Dictionary<double, double> _clickedCoordinates;
         private GameCanvas _playGrid;
 
         public MouseCapture(GameCanvas playGrid)
@@ -30,7 +30,7 @@ namespace kipschieten.Model
                 _clickedCoordinates.Add(clickPoint.X, clickPoint.Y);
         }
 
-        public Dictionary<double, double> getClicks()
+        public static Dictionary<double, double> getClicks()
         {
             Dictionary<double, double> temp = new Dictionary<double,double>(_clickedCoordinates);
             _clickedCoordinates.Clear();

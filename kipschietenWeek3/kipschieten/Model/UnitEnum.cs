@@ -9,6 +9,7 @@ namespace kipschieten.Model
     enum UnitEnum
     {
         Tree,
+        Stone,
         Cow,
         Chicken
     }

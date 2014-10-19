@@ -51,10 +51,10 @@ namespace kipschieten.View
                 _gameManager.Update();
 
                 // Check gameover
-                if (_gameManager.GameOver)
-                {
-                    GameOver();
-                }
+                //if (_gameManager.GameOver)
+                //{
+                //    GameOver();
+                //}
 
                 timeDiff = (long)((DateTime.UtcNow - _epoch).TotalMilliseconds - beforeTime);
                 sleepTime = frameTime - timeDiff;
