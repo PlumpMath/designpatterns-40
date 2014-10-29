@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Reflection;
 using Compiler;
-using Compiler.Node;
 using DP_Tokenizer;
 using VirtualMachine.Interface;
 
@@ -11,23 +10,23 @@ namespace VirtualMachine
 {
     public class VVirtualMachine : ICodeGenerator
     {
-        private readonly TokenList<BaseNode> _compileTokens;
+        private readonly TokenList<object[]> _compileTokens;
         private readonly SymbolTable _symbols;
         private readonly Dictionary<string, Delegate> _runDelegates;
 
-        private TokenList<BaseNode>.Node<BaseNode> _currentToken;
+        private TokenList<object[]>.Node<object[]> _currentToken;
 
-        private BaseNode GetNext()
+        private object[] GetNext()
         {
             return _currentToken == null ? (_currentToken = _compileTokens.Head).Data : (_currentToken.Next != null ? (_currentToken = _currentToken.Next).Data : null);
         }
 
-        private BaseNode PeekNext()
+        private object[] PeekNext()
         {
             return _currentToken == null ? _compileTokens.Head.Data : (_currentToken.Next != null ? _currentToken.Next.Data : null);
         }
 
-        public VVirtualMachine(TokenList<BaseNode> compileTokens, SymbolTable symbols)
+        public VVirtualMachine(TokenList<object[]> compileTokens, SymbolTable symbols)
         {
             _compileTokens = compileTokens;
             _symbols = symbols;
@@ -38,36 +37,29 @@ namespace VirtualMachine
         {
             while(PeekNext() != null)
             {
-                BaseNode compileToken = GetNext();
-                NextStepVisitor visitor = new NextStepVisitor();
-                compileToken.accept(visitor);
+                object[] compileToken = GetNext();
 
-                if (visitor.setNextStep())
-                    compileToken = GetNext();
-
-                //BaseNode compileToken = GetNext();
-
-                //if (compileToken.Length == 1)
-                    //continue;
+                if (compileToken.Length == 1)
+                    continue;
 
                 if (!isDelegate(compileToken))
                     continue;
 
-                var functionName = compileToken.ToString();
-                //var paramsObj = new object[compileToken.Length - 1];
-                //Array.Copy(compileToken, 1, paramsObj, 0, compileToken.Length - 1);
+                var functionName = (string)compileToken[0];
+                var paramsObj = new object[compileToken.Length - 1];
+                Array.Copy(compileToken, 1, paramsObj, 0, compileToken.Length - 1);
 
                 var delegateToRun = _runDelegates[functionName];
-                //if (!isAction(delegateToRun))
-                    //runAction(delegateToRun, paramsObj);
-                //else
-                   // runFunction(delegateToRun, paramsObj);
+                if (!isAction(delegateToRun))
+                    runAction(delegateToRun, paramsObj);
+                else
+                    runFunction(delegateToRun, paramsObj);
             }
         }
 
-        public bool isDelegate(BaseNode paramObj)
+        public bool isDelegate(object[] paramObj)
         {
-            var functionName = paramObj.ToString();
+            var functionName = (string)paramObj[0];
             return _runDelegates.ContainsKey(functionName);
         }
 
